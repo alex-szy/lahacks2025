@@ -3,20 +3,36 @@ from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QLineEdit, QLabel,
     QListWidget, QListWidgetItem, QFrame
 )
-
 from frontend.utils.icons import icon
 from frontend.ui.widgets.file_card import FileCard
-from pathlib import Path
+from typing import List
+from models.file import File
+from commands.find import _find as r_find
 
 
 class HomePage(QWidget):
-    """Original search-and-results view extracted into its own widget."""
-    def __init__(self, on_search, on_open):
+    """Search‑and‑results view.
+
+    Parameters
+    ----------
+    on_search : Callable[[str], Iterable[Path] | None]
+        Function invoked when the user presses *Return* or *Enter*. It should
+        return an iterable of ``pathlib.Path`` objects (or strings) pointing to
+        the matching files. If nothing matches, return an empty iterable or
+        ``None``.
+    on_open : Callable[[QListWidgetItem], None]
+        Called when a user clicks a file card in the list.
+    """
+
+    def __init__(self, on_open):
         super().__init__()
+
+        # ── Layout ────────────────────────────────────────────────────────────
         lay = QVBoxLayout(self)
         lay.setContentsMargins(32, 24, 32, 24)
         lay.setSpacing(24)
 
+        # ── Search bar ───────────────────────────────────────────────────────
         self.search_edit = QLineEdit(placeholderText="Search for a file …")
         self.search_edit.setFixedHeight(46)
         self.search_edit.setStyleSheet(
@@ -30,12 +46,16 @@ class HomePage(QWidget):
             QLineEdit::placeholder { color:#999; }
             """
         )
+        # leading magnifying‑glass icon
         mag = QLabel(self.search_edit)
-        mag.setPixmap(icon("home", 24).pixmap(QSize(24, 24)))
+        mag.setPixmap(icon("search", 24).pixmap(QSize(24, 24)))
         mag.move(16, 11)
-        self.search_edit.textChanged.connect(on_search)
+
+        # Trigger search *only* when user presses Return/Enter
+        self.search_edit.returnPressed.connect(self._handle_search)
         lay.addWidget(self.search_edit)
 
+        # ── Results list ──────────────────────────────────────────────────────
         self.results = QListWidget(frameShape=QFrame.NoFrame, spacing=4)
         self.results.itemClicked.connect(on_open)
         self.results.setStyleSheet(
@@ -46,9 +66,39 @@ class HomePage(QWidget):
         )
         lay.addWidget(self.results)
 
-        # quick demo content
-        for p in list(Path(__file__).parent.parent.glob("*.py"))[:5]:
-            card = FileCard(p)
-            it = QListWidgetItem(self.results)
-            it.setSizeHint(card.sizeHint())
-            self.results.setItemWidget(it, card)
+    # ── Internal helpers ─────────────────────────────────────────────────────
+    def _handle_search(self):
+        """Invoke external search callback and render its results."""
+        query = self.search_edit.text().strip()
+        if not query:
+            self._show_no_results()
+            return
+
+        try:
+            matches: list[File] | None = r_find(query)
+        except Exception as exc:  # defensive: don’t crash the UI
+            print(f"search error: {exc}")
+            matches = None
+
+        self._render_results(matches or [])
+
+    def _render_results(self, files: List[File]):
+        """Populate the QListWidget with FileCard widgets."""
+        self.results.clear()
+        files = list(files or [])
+        if not files:
+            self._show_no_results()
+            return
+        for file_obj in files:
+            card = FileCard(file_obj)
+            item = QListWidgetItem()
+            item.setSizeHint(card.sizeHint())
+            self.results.addItem(item)
+            self.results.setItemWidget(item, card)
+
+    def _show_no_results(self):
+        """Display a static list item indicating zero matches."""
+        self.results.clear()
+        empty = QListWidgetItem("No results found.")
+        empty.setFlags(Qt.ItemIsEnabled)  # non‑selectable label
+        self.results.addItem(empty)

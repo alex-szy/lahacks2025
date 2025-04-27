@@ -38,6 +38,7 @@ ICON_MAP = {
     "login": HERE / "icons/user.svg",
     "search": HERE / "icons/search.svg",
     "file": HERE / "icons/file.svg",
+    "pdf": HERE / "icons/pdf.svg",
 }
 
 

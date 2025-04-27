@@ -1,16 +1,14 @@
-"""Sleeker minimal‑theme PySide6 UI for Semantic File Explorer.
-Icons are flat (no bubbles), rows have no surrounding rectangles, and all text sits directly on the canvas.
-Run with `python file_browser_ui.py` (after `pip install PySide6`).
-Place any custom SVG icons in an `icons/` folder next to this file and update the `ICON_MAP` dict below.
-"""
-
 from __future__ import annotations
 
 import sys
 from pathlib import Path
 
-from PySide6.QtCore import Qt, QSize
-from PySide6.QtGui import QFont, QIcon, QPixmap
+from frontend.ui.widgets.file_card import FileCard
+from frontend.ui.widgets.nav_button import NavButton
+from frontend.utils.icons import icon
+
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QFont
 from PySide6.QtWidgets import (
     QApplication,
     QFrame,
@@ -20,96 +18,9 @@ from PySide6.QtWidgets import (
     QListWidget,
     QListWidgetItem,
     QMainWindow,
-    QToolButton,
     QVBoxLayout,
     QWidget,
-    QStyle,
 )
-
-# -----------------------------------------------------------------------------
-# Simple icon helper (optional SVG replacements for a unified look)
-# -----------------------------------------------------------------------------
-HERE = Path(__file__).parent
-ICON_MAP = {
-    "watch": HERE / "icons/refresh.svg",
-    "folder": HERE / "icons/folder.svg",
-    "keys": HERE / "icons/key.svg",
-    "settings": HERE / "icons/settings.svg",
-    "login": HERE / "icons/user.svg",
-    "search": HERE / "icons/search.svg",
-    "file": HERE / "icons/file.svg",
-}
-
-
-def icon(name: str, size: int = 20) -> QIcon:
-    path = ICON_MAP.get(name)
-    if path and path.exists():
-        return QIcon(str(path))
-    # graceful fallback to built‑in if custom SVG missing
-    return QApplication.style().standardIcon(getattr(QStyle, "SP_FileIcon", 0))
-
-
-# -----------------------------------------------------------------------------
-# Helper widgets
-# -----------------------------------------------------------------------------
-
-
-class NavButton(QToolButton):
-    """Flat sidebar button with only an icon."""
-
-    def __init__(self, icon: QIcon, tooltip: str):
-        super().__init__()
-        self.setIcon(icon)
-        self.setIconSize(QSize(22, 22))
-        self.setToolTip(tooltip)
-        self.setCursor(Qt.PointingHandCursor)
-        self.setCheckable(True)
-        self.setAutoExclusive(True)
-        self.setStyleSheet(
-            """
-            QToolButton { border:none; background:transparent; padding:6px; }
-            QToolButton:hover { background:#f2f2f2; border-radius:6px; }
-            QToolButton:checked { background:#ebf0ff; border-radius:6px; }
-            """
-        )
-
-
-class FileCard(QWidget):
-    """Single result row without outer rectangles."""
-
-    def __init__(self, path: Path):
-        super().__init__()
-        self.path = path
-        # transparent background lets list widget style show through
-        self.setStyleSheet("background:transparent;")
-
-        lay = QHBoxLayout(self)
-        lay.setContentsMargins(4, 6, 4, 6)
-        lay.setSpacing(14)
-
-        icon_lbl = QLabel()
-        file_icn = icon("file", 28).pixmap(28, 28)
-        icon_lbl.setPixmap(file_icn)
-        lay.addWidget(icon_lbl)
-
-        text_col = QVBoxLayout()
-        name_lbl = QLabel(path.name)
-        name_lbl.setStyleSheet("font-weight:600; font-size:14px;")
-        sum_lbl = QLabel("Summary of file …")  # TODO real summary
-        sum_lbl.setStyleSheet("color:#666; font-size:12px;")
-        sum_lbl.setWordWrap(True)
-        text_col.addWidget(name_lbl)
-        text_col.addWidget(sum_lbl)
-        lay.addLayout(text_col, 1)
-
-        meta_lbl = QLabel(f"{path.stat().st_size/1024:.1f} KB · {path.stat().st_mtime:.0f}")
-        meta_lbl.setStyleSheet("color:#777; font-size:11px;")
-        lay.addWidget(meta_lbl)
-
-
-# -----------------------------------------------------------------------------
-# Main window
-# -----------------------------------------------------------------------------
 
 
 class MainWindow(QMainWindow):
@@ -210,10 +121,6 @@ class MainWindow(QMainWindow):
         card = self.results_list.itemWidget(item)
         print("Open", card.path)
 
-
-# -----------------------------------------------------------------------------
-# Entry point
-# -----------------------------------------------------------------------------
 
 def main():
     app = QApplication(sys.argv)

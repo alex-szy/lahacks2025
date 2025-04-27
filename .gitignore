@@ -10,3 +10,5 @@ build
 dist
 *.spec
 config/
+config/watch_paths.json
+config/folder_paths.json

@@ -1,6 +1,5 @@
 watchdog
 requests
-pywin32
 PyMuPDF
 python-docx
 python-dotenv
@@ -9,3 +8,6 @@ click
 sentence-transformers
 faiss-cpu
 numpy
+pystray
+pillow
+psutil

@@ -1,7 +1,7 @@
 import json
 from os import PathLike
 from typing import Union
-from ..settings import FOLDER_PATHS_FILE
+from settings import FOLDER_PATHS_FILE
 
 
 class FileSystemConfig:
@@ -16,6 +16,13 @@ class FileSystemConfig:
             "file_path": path,
             "description": description
         })
+
+        self.json_path.write_text(json.dumps(data, indent=2))
+    
+    def remove_entry(self, path: str) -> None:
+        data = json.loads(self.json_path.read_text())
+
+        data = [entry for entry in data if entry.get("file_path") != path]
 
         self.json_path.write_text(json.dumps(data, indent=2))
 

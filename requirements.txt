@@ -6,5 +6,13 @@
 #
 pywin32==310
     # via -r requirements.in
+lxml==5.4.0
+    # via python-docx
+pymupdf==1.25.5
+    # via -r requirements.in
+python-docx==1.1.2
+    # via -r requirements.in
+typing-extensions==4.13.2
+    # via python-docx
 watchdog==6.0.0
     # via -r requirements.in

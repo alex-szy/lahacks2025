@@ -63,18 +63,29 @@ packaging==25.0
     #   huggingface-hub
     #   transformers
 pillow==11.2.1
-    # via sentence-transformers
+    # via
+    #   -r requirements.in
+    #   pystray
+    #   sentence-transformers
+psutil==7.0.0
+    # via -r requirements.in
 pymongo==4.12.0
     # via -r requirements.in
 pymupdf==1.25.5
     # via -r requirements.in
+pyobjc-core==11.0
+    # via
+    #   pyobjc-framework-cocoa
+    #   pyobjc-framework-quartz
+pyobjc-framework-cocoa==11.0
+    # via pyobjc-framework-quartz
+pyobjc-framework-quartz==11.0
+    # via pystray
 pystray==0.19.5
     # via -r requirements.in
 python-docx==1.1.2
     # via -r requirements.in
 python-dotenv==1.1.0
-    # via -r requirements.in
-pywin32==310
     # via -r requirements.in
 pyyaml==6.0.2
     # via
@@ -97,6 +108,8 @@ scipy==1.15.2
     #   sentence-transformers
 sentence-transformers==4.1.0
     # via -r requirements.in
+six==1.17.0
+    # via pystray
 sympy==1.13.3
     # via torch
 threadpoolctl==3.6.0

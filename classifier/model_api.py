@@ -1,21 +1,6 @@
 import requests
-import os
-from dotenv import load_dotenv
 from pathlib import Path
-
-
-ENV_DIR = Path(__file__).resolve().parent.parent
-DOTENV_PATH = ENV_DIR / ".env"
-
-if not DOTENV_PATH.exists():
-    raise FileNotFoundError(f"Missing .env file at {DOTENV_PATH}")
-
-load_dotenv(dotenv_path=DOTENV_PATH)
-
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-
-if not GEMINI_API_KEY:
-    raise ValueError("GEMINI_API_KEY is not set in .env")
+from settings import GEMINI_API_KEY
 
 class ModelAPI:
     def __init__(self, model_name: str, temperature: float = 0.0):

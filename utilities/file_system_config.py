@@ -18,6 +18,13 @@ class FileSystemConfig:
         })
 
         self.json_path.write_text(json.dumps(data, indent=2))
+    
+    def remove_entry(self, path: str) -> None:
+        data = json.loads(self.json_path.read_text())
+
+        data = [entry for entry in data if entry.get("file_path") != path]
+
+        self.json_path.write_text(json.dumps(data, indent=2))
 
     def read_all_entries(self) -> dict[str, dict]:
         data = json.loads(self.json_path.read_text())

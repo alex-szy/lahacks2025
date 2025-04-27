@@ -1,17 +1,26 @@
+from typing import Optional
+from pathlib import Path
 from classifier.prompt_builder import build_summarization_prompt, build_classification_prompt, prepare_folder_info
 from classifier.model_api import ModelAPI
 from utilities.preprocessor import Preprocessor
 from utilities.file_system_config import FileSystemConfig
 from models.file import File
 
+
 class Classifier:
     def __init__(self, token_threshold: int = None):
         self.preprocessor = Preprocessor(token_threshold)
-        self.summarization_model = ModelAPI(model_name="gemini-2.0-flash", temperature=0.3)
-        self.classification_model = ModelAPI(model_name="gemini-2.0-flash", temperature=0.0)
+        self.summarization_model = ModelAPI(
+            model_name="gemini-2.0-flash", temperature=0.3)
+        self.classification_model = ModelAPI(
+            model_name="gemini-2.0-flash", temperature=0.0)
         self.config = FileSystemConfig()
 
-    def classify(self, file: File) -> str:
+    def classify(self, file: File) -> Optional[str]:
+        """
+        Choose a destination folder to put the file in, or return none if none of them are suitable.
+        The path returned is guaranteed to exist in the system.
+        """
         file_content = self.preprocessor.preprocess(file)
         file_name = file.name
 
@@ -21,9 +30,11 @@ class Classifier:
 
         folder_paths, folder_descriptions = prepare_folder_info(self.config)
 
-        classification_response = self._classify_file(summary, file_name, folder_paths, folder_descriptions)
+        classification_response = self._classify_file(
+            summary, file_name, folder_paths, folder_descriptions)
 
-        validated_path = self._validate_response(classification_response, folder_paths)
+        validated_path = self._validate_response(
+            classification_response, folder_paths)
 
         return validated_path
 
@@ -31,18 +42,17 @@ class Classifier:
         prompt = build_summarization_prompt(content, file_name)
         summary = self.summarization_model.call(prompt)
         return summary.strip()
-    
+
     def _classify_file(self, summary: str, file_name: str, folder_paths: list[str], folder_descriptions: list[str]) -> str:
-        classification_prompt = build_classification_prompt(summary, file_name, folder_paths, folder_descriptions)
+        classification_prompt = build_classification_prompt(
+            summary, file_name, folder_paths, folder_descriptions)
         # print(f"classification prompt is: {classification_prompt}")
         response = self.classification_model.call(classification_prompt)
         # print(f"Classification is: {response}")
         return response
 
-    def _validate_response(self, response: str, folder_paths: list[str]) -> str:
+    def _validate_response(self, response: str, folder_paths: list[str]) -> Optional[str]:
         response = response.strip()
-        if response in folder_paths:
+        if response in folder_paths and Path(response).exists():
             return response
-        if response.upper() == "PATH_NOT_FOUND":
-            return "PATH_NOT_FOUND"
-        raise ValueError(f"Invalid response from model: {response}")
+        return None

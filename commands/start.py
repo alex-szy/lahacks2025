@@ -12,5 +12,6 @@ def start():
     daemon_path = BASE_DIR / "daemon.py"
     python_executable = sys.executable
 
-    subprocess.Popen([python_executable, daemon_path], close_fds=True)
+    subprocess.Popen([python_executable, daemon_path],
+                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     click.echo("Starting Munchkin daemon...")

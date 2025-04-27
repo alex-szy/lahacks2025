@@ -18,7 +18,7 @@ class SaveProcessor:
         self.db = db
         self.preprocessor = Preprocessor(token_threshold=token_threshold)
 
-    def process_and_save(self, file_path: str) -> None:
+    def process_file(self, file_path: str) -> str:
         # 1. Read file from path
         file = self._load_file(file_path)
 
@@ -26,13 +26,14 @@ class SaveProcessor:
         embedding: np.ndarray = self.encoder.encode_file(file)
 
         # 3. Classify file to determine target folder
-        target_folder: str = self.classifier.classify(file)
+        target_folder = self.classifier.classify(file)
 
-        # 4. Move file to target folder
-        new_file_path = self._move_file(file.path, target_folder)
+        if target_folder:
+            file_path = self._move_file(file.path, target_folder)
 
         # 5. Save embedding + new file path into database
-        self.db.store_embedding_vector(embedding.tolist(), new_file_path, file.summary)
+        self.db.store_embedding_vector(
+            embedding.tolist(), file_path, file.summary)
 
     def _load_file(self, file_path: str) -> File:
         with open(file_path, "rb") as f:
@@ -41,7 +42,6 @@ class SaveProcessor:
         return File(content=content, name=filename, path=file_path)
 
     def _move_file(self, original_path: str, target_folder: str) -> str:
-        os.makedirs(target_folder, exist_ok=True)
         filename = os.path.basename(original_path)
         new_path = os.path.join(target_folder, filename)
         shutil.move(original_path, new_path)

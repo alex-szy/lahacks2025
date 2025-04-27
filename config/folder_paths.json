@@ -1,14 +1,14 @@
 [
   {
-    "file_path": "/root/test_lahacks2025/baseball/",
-    "description": "Baseball highlights"
+    "file_path": "C:\\Users\\suziy\\Desktop\\CS133",
+    "description": "parallel and distributed computing, with concepts like openmp, cache blocking, fpga, cuda and other parallel computing technologies"
   },
   {
-    "file_path": "/root/test_lahacks2025/gaming/",
-    "description": "My favorite video games"
+    "file_path": "C:\\Users\\suziy\\Desktop\\CS132",
+    "description": "compilers and java"
   },
   {
-    "file_path": "/root/test_lahacks2025/books/",
-    "description": "Classic stories"
+    "file_path": "C:\\Users\\suziy\\Desktop\\CS134",
+    "description": "distributed systems course, with tech like hadoop, spark, paxos, mapreduce, consistency"
   }
 ]

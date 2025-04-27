@@ -10,12 +10,12 @@ def assoc():
 
 @assoc.command()
 @click.argument('folder_path')
-@click.argument('description')
+@click.option('--description', prompt="Description of the folder", help="Associate this folder with a certain kind of files.")
 def add(folder_path, description):
     """Add a folder association."""
     cfg = FileSystemConfig()
     cfg.append_entry(folder_path, description)
-    print(f"Sucessfully added: {folder_path}, {description}")
+    click.echo(f"Sucessfully added: {folder_path}, {description}")
 
 
 @assoc.command()
@@ -32,9 +32,8 @@ def list_assoc():
     cfg = FileSystemConfig()
     path_list = cfg.read_all_entries()
 
-    print("Existing Paths:\n")
+    click.echo("Existing Paths:\n")
     for path, info in path_list.items():
-        print(path)
-        print(info)
-        print("")
-
+        click.echo(path)
+        click.echo(info)
+        click.echo("")

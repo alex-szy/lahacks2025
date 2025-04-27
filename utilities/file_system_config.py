@@ -7,7 +7,6 @@ from settings import FOLDER_PATHS_FILE
 class FileSystemConfig:
     def __init__(self, json_path: Union[str, bytes, PathLike] = FOLDER_PATHS_FILE):
         self.json_path = json_path
-        print(json_path)
 
     def append_entry(self, path: str, description: str) -> None:
         data = json.loads(self.json_path.read_text())
@@ -18,7 +17,7 @@ class FileSystemConfig:
         })
 
         self.json_path.write_text(json.dumps(data, indent=2))
-    
+
     def remove_entry(self, path: str) -> None:
         data = json.loads(self.json_path.read_text())
 

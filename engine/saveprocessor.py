@@ -6,10 +6,9 @@ from engine.encoder import Encoder
 
 import os
 from dotenv import load_dotenv
-from pymongo import MongoClient
 
 import sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from db.database import VectorDatabase
 from models.file import File
 from utilities.preprocessor import Preprocessor
@@ -57,13 +56,11 @@ class SaveProcessor:
 
         return new_path
 
-if __name__ == "__main__":
-# Load the .env file
-    load_dotenv()
+# if __name__ == "__main__":
+#     load_dotenv()
+#     MONGO_URI = os.getenv("MONGO_URI")
 
-    # Fetch values
-    MONGO_URI = os.getenv("MONGO_URI")
-    print(MONGO_URI)
-    db = VectorDatabase(MONGO_URI)
-    saveprocess = SaveProcessor(encoder=Encoder(), classifier=Classifier(), db=db)
-    saveprocess.process_and_save("C:\\Users\\zhero\\Desktop\\Jerome\\UCLA\\Academics\\Classes\\Quarter 9-Spring 2025\\the art of meal preparing.txt")
+#     db = VectorDatabase(MONGO_URI)
+#     saveprocess = SaveProcessor(encoder=Encoder(), classifier=Classifier(), db=db)
+
+#     saveprocess.process_and_save("path_to_file")

@@ -36,13 +36,14 @@ class VectorDatabase:
     Output:
         result: List[Dict] (descending order of similarity score, dict contains "file_path" key)
     """
-    def get_query_results(self, query_embedding, num_candidates=50, limit=15):
+    # def get_query_results(self, query_embedding, num_candidates=50, limit=15):
+    def get_query_results(self, query_embedding, num_candidates=2, limit=1):
         client = MongoClient(self.connection_string)
         pipeline = [
             {
                 '$vectorSearch': {
                     'index': "vector_index", 
-                    'path': "file_embedding", 
+                    'path': "file_embedding",
                     'queryVector': query_embedding, 
                     'numCandidates': num_candidates, 
                     'limit': limit
@@ -97,26 +98,3 @@ class VectorDatabase:
             time.sleep(5)
         print(result + " is ready for querying.")
         client.close()
-
-# def main():
-#     try:
-#         load_dotenv()
-#         uri = os.getenv("MONGO_URI")
-#         vector_db = VectorDatabase(uri, "file_system", "embedded_file", "file_embedding")
-#         vector_db.save_search_index()
-        
-#         query_results = vector_db.get_query_results(query_embedding)
-
-#         print("Printing query results...")
-#         for q in query_results:
-#             print(q)
-
-#         # Close the connection
-#         vector_db.client.close()
-#         print("Client closed.")
-        
-#     except Exception as e:
-#         print(f"Error: {e}")
-
-# if __name__ == "__main__":
-#     main()

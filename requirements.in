@@ -11,3 +11,4 @@ numpy
 pystray
 pillow
 psutil
+PySide6

@@ -68,7 +68,7 @@ pymupdf==1.25.5
 pystray==0.19.5
     # via -r requirements.in
 python-docx==1.1.2
-    # via -r requirements.in
+    # via -r requirements.ins
 python-dotenv==1.1.0
     # via -r requirements.in
 pyyaml==6.0.2
@@ -92,6 +92,11 @@ scipy==1.15.2
     #   sentence-transformers
 sentence-transformers==4.1.0
     # via -r requirements.in
+shiboken6==6.9.0
+    # via
+    #   pyside6
+    #   pyside6-addons
+    #   pyside6-essentials
 six==1.17.0
     # via pystray
 sympy==1.13.3

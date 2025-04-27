@@ -3,6 +3,14 @@ import click
 import importlib
 import pkgutil
 import commands
+import logging
+from settings import BASE_DIR
+
+logging.basicConfig(
+    filename=BASE_DIR / "munchkin.log",
+    level=logging.DEBUG,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 
 @click.group()

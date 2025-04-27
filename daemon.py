@@ -22,12 +22,6 @@ class DaemonService:
         self.tray_icon = None
         self.watch_thread = None
 
-        logging.basicConfig(
-            filename=BASE_DIR / "munchkin.log",
-            level=logging.INFO,
-            format="%(asctime)s - %(levelname)s - %(message)s"
-        )
-
     def get_pid(self):
         if PID_FILE.exists():
             try:
@@ -118,6 +112,11 @@ class DaemonService:
             logging.info("Observers stopped.")
 
     def start(self):
+        logging.basicConfig(
+            filename=BASE_DIR / "mckndaemon.log",
+            level=logging.DEBUG,
+            format="%(asctime)s - %(levelname)s - %(message)s"
+        )
         if self.get_pid() is not None:
             logging.error(
                 "Another Munchkin daemon is already running. Exiting.")

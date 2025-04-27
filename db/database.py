@@ -1,6 +1,8 @@
 from pymongo import MongoClient
 from pymongo.operations import SearchIndexModel
 import time
+import logging
+
 
 class VectorDatabase:
     def __init__(self, connection_string):
@@ -8,7 +10,7 @@ class VectorDatabase:
         self.db_name = "file_system"
         self.collection_name = "embedded_file"
         client = MongoClient(self.connection_string)
-        print('connected')
+        logging.debug('connected to database')
         client.close()
 
     """
@@ -19,6 +21,7 @@ class VectorDatabase:
     Output:
         None
     """
+
     def store_embedding_vector(self, embedding_vector, file_path, file_summary):
         client = MongoClient(self.connection_string)
         client[self.db_name][self.collection_name].insert_one({
@@ -27,7 +30,7 @@ class VectorDatabase:
             "file_summary": file_summary
         })
         client.close()
-    
+
     """
     Performs cosine search and get closest query
     Input:
@@ -37,21 +40,22 @@ class VectorDatabase:
     Output:
         result: List[Dict] (descending order of similarity score, dict contains "file_path" key)
     """
+
     def get_query_results(self, query_embedding, num_candidates=20, limit=10):
         client = MongoClient(self.connection_string)
         pipeline = [
             {
                 '$vectorSearch': {
-                    'index': "vector_index", 
+                    'index': "vector_index",
                     'path': "file_embedding",
-                    'queryVector': query_embedding, 
-                    'numCandidates': num_candidates, 
+                    'queryVector': query_embedding,
+                    'numCandidates': num_candidates,
                     'limit': limit
                 }
             },
             {
                 '$project': {
-                    '_id': 0, 
+                    '_id': 0,
                     'file_path': 1,
                     'file_summary': 1,
                     'score': {
@@ -84,18 +88,21 @@ class VectorDatabase:
             type="vectorSearch"
         )
 
-        result = client[self.db_name][self.collection_name].create_search_index(model=search_index_model)
-        print("New search index named " + result + " is building.")
+        result = client[self.db_name][self.collection_name].create_search_index(
+            model=search_index_model)
+        logging.debug("New search index named " + result + " is building.")
 
-        print("Polling to check if the index is ready. This may take up to a minute.")
-        predicate=None
+        logging.debug(
+            "Polling to check if the index is ready. This may take up to a minute.")
+        predicate = None
         if predicate is None:
-            predicate = lambda index: index.get("queryable") is True
+            def predicate(index): return index.get("queryable") is True
 
         while True:
-            indices = list(client[self.db_name][self.collection_name].list_search_indexes(result))
+            indices = list(
+                client[self.db_name][self.collection_name].list_search_indexes(result))
             if len(indices) and predicate(indices[0]):
                 break
             time.sleep(5)
-        print(result + " is ready for querying.")
+        logging.debug(result + " is ready for querying.")
         client.close()

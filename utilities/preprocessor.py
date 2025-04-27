@@ -3,11 +3,13 @@ from models.file import File
 import fitz  # PyMuPDF for PDF extraction
 from io import BytesIO
 from docx import Document
+import logging
 
 SUPPORTED_TEXT_EXTENSIONS = [
     "txt", "md", "json", "csv", "tsv", "yaml", "yml", "ini", "xml", "html",
     "py", "java", "js", "cpp", "c", "h", "sh", "pdf", "docx"
 ]
+
 
 class Preprocessor:
     def __init__(self, token_threshold: Optional[int] = None):
@@ -34,9 +36,10 @@ class Preprocessor:
             try:
                 return file.content.decode('utf-8')
             except UnicodeDecodeError:
-                print(f"[Warning] Failed to decode '{file.name}' as UTF-8. Returning empty string.")
+                logging.error(
+                    f"[Warning] Failed to decode '{file.name}' as UTF-8. Returning empty string.")
                 return ""
-        
+
         raise ValueError(f"Unsupported file extension: {file.extension}")
 
     def _extract_text_from_pdf_bytes(self, content: bytes) -> str:
@@ -46,7 +49,8 @@ class Preprocessor:
             doc.close()
             return text
         except Exception as e:
-            print(f"[Warning] Failed to extract text from PDF: {str(e)}")
+            logging.error(
+                f"[Warning] Failed to extract text from PDF: {str(e)}")
             return ""
 
     def _extract_text_from_docx_bytes(self, content: bytes) -> str:
@@ -55,7 +59,8 @@ class Preprocessor:
             text = "\n".join(para.text for para in doc.paragraphs)
             return text
         except Exception as e:
-            print(f"[Warning] Failed to extract text from DOCX: {str(e)}")
+            logging.error(
+                f"[Warning] Failed to extract text from DOCX: {str(e)}")
             return ""
 
     def _apply_preprocessing(self, content: str) -> str:

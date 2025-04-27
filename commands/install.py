@@ -2,6 +2,7 @@ import click
 import sys
 import sys
 import subprocess
+import logging
 import tempfile
 from pathlib import Path
 from settings import BASE_DIR, ASSETS_DIR
@@ -34,7 +35,7 @@ def get_user_and_sid():
         return parts
 
     except subprocess.CalledProcessError as e:
-        print(f"Error running whoami: {e}")
+        logging.error(f"Error running whoami: {e}")
         return None, None
 
 

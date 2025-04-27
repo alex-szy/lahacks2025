@@ -5,6 +5,7 @@ from classifier.model_api import ModelAPI
 from utilities.preprocessor import Preprocessor
 from utilities.file_system_config import FileSystemConfig
 from models.file import File
+import logging
 
 
 class Classifier:
@@ -46,9 +47,9 @@ class Classifier:
     def _classify_file(self, summary: str, file_name: str, folder_paths: list[str], folder_descriptions: list[str]) -> str:
         classification_prompt = build_classification_prompt(
             summary, file_name, folder_paths, folder_descriptions)
-        # print(f"classification prompt is: {classification_prompt}")
+        logging.debug(f"classification prompt is: {classification_prompt}")
         response = self.classification_model.call(classification_prompt)
-        # print(f"Classification is: {response}")
+        logging.debug(f"Classification is: {response}")
         return response
 
     def _validate_response(self, response: str, folder_paths: list[str]) -> Optional[str]:

@@ -1,15 +1,11 @@
 import json
-from pathlib import Path
+from os import PathLike
+from typing import Union
+from ..settings import FOLDER_PATHS_FILE
 
-# Environment setup
-ENV_DIR = Path(__file__).resolve().parent.parent / "config"
-DEFAULT_JSON_PATH = ENV_DIR / "folder_paths.json"
-
-if not ENV_DIR.exists():
-    raise FileNotFoundError(f"Environment folder missing: {ENV_DIR}")
 
 class FileSystemConfig:
-    def __init__(self, json_path: Path = DEFAULT_JSON_PATH):
+    def __init__(self, json_path: Union[str, bytes, PathLike] = FOLDER_PATHS_FILE):
         self.json_path = json_path
         print(json_path)
 

@@ -4,23 +4,21 @@ import win32event
 import logging
 import time
 import json
-import os
+from pathlib import Path
 from watchdog.observers import Observer
 from watcher import WatcherHandler
+from ..settings import BASE_DIR, WATCH_PATHS_FILE
 
 logging.basicConfig(
-    filename="C:\\Users\\suziy\\Desktop\\file_watcher.log",
+    filename=BASE_DIR / "munchkin.log",
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
-CONFIG_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config")
-WATCH_PATHS_FILE = os.path.join(CONFIG_DIR, "watch_paths.json")
-
 
 class FileWatcherService(win32serviceutil.ServiceFramework):
-    _svc_name_ = "PythonFileWatcher"
-    _svc_display_name_ = "Python File Watcher Service"
+    _svc_name_ = "MunchkinWatcher"
+    _svc_display_name_ = "Munchkin File Watcher Service"
     _svc_description_ = "Watches a directory and logs file changes."
 
     def __init__(self, args):
@@ -28,12 +26,12 @@ class FileWatcherService(win32serviceutil.ServiceFramework):
         self.stop_event = win32event.CreateEvent(None, 0, 0, None)
         self.running = True
 
-    def SvcStop(self):
+    def SvcStop(self) -> None:
         self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
         self.running = False
         win32event.SetEvent(self.stop_event)
 
-    def SvcDoRun(self):
+    def SvcDoRun(self) -> None:
         logging.info("Starting service")
         logging.info(f"Watch paths file at: {WATCH_PATHS_FILE}")
         try:

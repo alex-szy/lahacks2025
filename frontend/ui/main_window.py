@@ -4,6 +4,7 @@ import sys
 from PySide6.QtWidgets import QStackedWidget
 from frontend.ui.pages.home_page import HomePage
 from frontend.ui.pages.watch_page import WatchPage
+from frontend.ui.pages.dest_page import DestinationPage
 from frontend.ui.widgets.nav_button import NavButton
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont
@@ -35,6 +36,7 @@ class MainWindow(QMainWindow):
         print("Open", card.path)
     
     def backend_add_watch(self, path: Path):
+        return 
         print(">> Watch this folder in backend:", path)
         # TODO: plug into your FileSystemConfig / observer logic
 
@@ -72,8 +74,10 @@ class MainWindow(QMainWindow):
         self.pages = QStackedWidget()
         self.home   = HomePage(self.on_search, self.open_item)
         self.watch  = WatchPage(self.backend_add_watch)  # pass your backend hook
+        self.dest = DestinationPage()
         self.pages.addWidget(self.home)   # index 0
         self.pages.addWidget(self.watch)  # index 1
+        self.pages.addWidget(self.dest) #index 2
         # add more pages later …
 
         root.addWidget(sidebar)

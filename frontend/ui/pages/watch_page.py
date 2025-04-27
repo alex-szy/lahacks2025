@@ -8,8 +8,11 @@ from tkinter import filedialog
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QFileDialog, QHeaderView,
-    QLabel, QLineEdit, QPushButton, QTableWidget, QTableWidgetItem, QAbstractItemView
+    QLabel, QLineEdit, QPushButton, QTableWidget, QTableWidgetItem, QAbstractItemView, QInputDialog
 )
+
+from commands import watch
+from utilities.file_system_config import FileSystemConfig
 
 
 class WatchPage(QWidget):
@@ -17,7 +20,8 @@ class WatchPage(QWidget):
 
     def __init__(self, add_callback):
         super().__init__()
-        self._add_cb = add_callback
+        # self._add_cb = add_callback
+        self._add_cb = watch._add
         self.setStyleSheet('font-family:"Poppins",sans-serif;')
 
         root = QVBoxLayout(self)
@@ -34,7 +38,7 @@ class WatchPage(QWidget):
         self.path_edit.setMinimumWidth(350)
         self.path_edit.setStyleSheet(
             "border:1px solid #d4d4d4; border-radius:6px; padding:6px 8px;"
-            'font-family:"Poppins",sans-serif; font-size:13px;'
+            'font-family:"Poppins",sans-serif; font-size:13px;color:#000000;'
         )
         row.addWidget(self.path_edit, 1)
 
@@ -96,12 +100,35 @@ class WatchPage(QWidget):
         self.table.setSelectionMode(QAbstractItemView.NoSelection)
         root.addWidget(self.table, 1)
 
+        self._load_existing_paths()
+
+    def _load_existing_paths(self):
+        """Load previously watched paths and display them."""
+        paths = watch.load_watch_paths()
+        for path in paths:
+            self._insert_path(path)
     
     def _browse(self):
         # native Qt folder dialog (non-blocking)
         path = QFileDialog.getExistingDirectory(self, "Choose a folder to watch")
+        # if path:
+        #     self.path_edit.setText(path)
+        print(path)
         if path:
-            self.path_edit.setText(path)
+            self._add_cb(path)
+            self._insert_path(path)
+            # Ask user for description
+            # description, ok = QInputDialog.getText(self, "Enter Description", "Describe this folder:")
+            # if ok and description.strip():
+            #     self._insert_path(path)
+                # self._add_cb("".join(list(str(path))), description)  # Notify backend (if needed for your app)
+                
+                # --- Save to assoc storage ---
+                # self._add_cb(path)
+                # cfg = FileSystemConfig()
+                # cfg.append_entry(path, description)
+            # else:
+            #     print("No description provided. Skipped adding.")
 
     def _add(self):
         raw = self.path_edit.text().strip()

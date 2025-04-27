@@ -1,6 +1,9 @@
 from sentence_transformers import SentenceTransformer
 import numpy as np
 from typing import Optional
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 from utilities.preprocessor import Preprocessor
 from models.file import File
 

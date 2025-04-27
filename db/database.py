@@ -8,12 +8,6 @@ class VectorDatabase:
         self.db_name = "file_system"
         self.collection_name = "embedded_file"
 
-        client = MongoClient(self.connection_string)
-        if self.collection_name not in client[self.db_name].list_collection_names():
-            print("Creating collection...")
-            client[self.db_name].create_collection(self.collection_name)
-        client.close()
-
     """
     Stores embedding vector to db
     Input:
@@ -22,8 +16,6 @@ class VectorDatabase:
     Output:
         None
     """
-    # embedding vector: list
-    # file_path: string
     def store_embedding_vector(self, embedding_vector, file_path):
         client = MongoClient(self.connection_string)
         client[self.db_name][self.collection_name].insert_one({
@@ -69,7 +61,7 @@ class VectorDatabase:
         client.close()
         return result
 
-    def save_search_index(self, num_dimensions):
+    def save_search_index(self, num_dimensions=768):
         client = MongoClient(self.connection_string)
         search_index_model = SearchIndexModel(
             definition={

@@ -4,6 +4,10 @@
 #
 #    pip-compile
 #
+click==8.1.8
+    # via -r requirements.in
+colorama==0.4.6
+    # via click
 pywin32==310
     # via -r requirements.in
 lxml==5.4.0

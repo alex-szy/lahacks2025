@@ -17,6 +17,8 @@ class Classifier:
 
         summary = self._summarize_content(file_content, file_name)
 
+        file.add_summary(summary)
+
         folder_paths, folder_descriptions = prepare_folder_info(self.config)
 
         classification_response = self._classify_file(summary, file_name, folder_paths, folder_descriptions)

@@ -17,6 +17,10 @@ class File:
         self.size_bytes = size_bytes
         self.created_at = created_at
         self.modified_at = modified_at
+        self.summary = ""
+    
+    def add_summary(self, summary: str) -> None:
+        self.summary = summary
 
     def _infer_extension(self) -> Optional[str]:
         _, ext = os.path.splitext(self.name)

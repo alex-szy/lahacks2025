@@ -32,13 +32,14 @@ class MainWindow(QMainWindow):
 
     def _build_ui(self):
         central = QWidget()
+        central.setStyleSheet("background: #ffffff;")
         root = QHBoxLayout(central)
         root.setContentsMargins(0, 0, 0, 0)
 
         # Sidebar -----------------------------------------------------------
         sidebar = QFrame()
         sidebar.setFixedWidth(72)
-        sidebar.setStyleSheet("background:#fafafa; border-right:1px solid #e7e7e7;")
+        sidebar.setStyleSheet("background:#ffffff; border-right:1px solid #ffffff;")
         side_lay = QVBoxLayout(sidebar)
         side_lay.setAlignment(Qt.AlignTop)
         side_lay.setContentsMargins(12, 16, 12, 16)
@@ -66,17 +67,30 @@ class MainWindow(QMainWindow):
 
         # Search bar -------------------------------------------------------
         self.search_edit = QLineEdit()
-        self.search_edit.setPlaceholderText("Search …")
+        self.search_edit.setPlaceholderText("Search for a file ...")
         self.search_edit.setFixedHeight(46)
         self.search_edit.setStyleSheet(
             """
-            QLineEdit { border:1px solid #d4d4d4; border-radius:23px; padding-left:48px; }
-            QLineEdit:focus { border-color:#7a74ff; }
+            QLineEdit {
+                background: #ffffff;
+                color: #222222;
+                font-family: "Poppins", sans-serif;
+                font-size: 14px;
+                border: 1px solid #d4d4d4;
+                border-radius: 23px;
+                padding-left: 48px;
+            }
+            QLineEdit:focus {
+                border-color: #7a74ff;
+            }
+            QLineEdit::placeholder {
+                color: #999999;
+            }
             """
         )
         magnifier = QLabel(self.search_edit)
-        magnifier.setPixmap(icon("search", 20).pixmap(20, 20))
-        magnifier.move(16, 13)
+        magnifier.setPixmap(icon("search", 24).pixmap(24, 24))
+        magnifier.move(16, 11)
         self.search_edit.textChanged.connect(self.on_search)
         c_lay.addWidget(self.search_edit)
 
@@ -124,7 +138,7 @@ class MainWindow(QMainWindow):
 
 def main():
     app = QApplication(sys.argv)
-    app.setFont(QFont("Helvetica Neue", 10))
+    app.setFont(QFont("Poppins", 10))
     app.setStyle("Fusion")
     win = MainWindow()
     win.show()

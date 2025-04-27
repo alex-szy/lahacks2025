@@ -8,7 +8,7 @@ from PySide6.QtWidgets import (
     QStyle,
 )
 
-HERE = Path(__file__).parent
+HERE = Path(__file__).parent.parent / "resources"
 ICON_MAP = {
     "watch": HERE / "icons/refresh.svg",
     "folder": HERE / "icons/folder.svg",
@@ -20,8 +20,9 @@ ICON_MAP = {
 }
 
 
-def icon(name: str, size: int = 20) -> QIcon:
+def icon(name: str, size: int = 200) -> QIcon:
     path = ICON_MAP.get(name)
+    print(path)
     if path and path.exists():
         return QIcon(str(path))
     # graceful fallback to built‑in if custom SVG missing

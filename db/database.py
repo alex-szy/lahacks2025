@@ -5,19 +5,24 @@ from pymongo.operations import SearchIndexModel
 import time
 
 class VectorDatabase:
-    def __init__(self, connection_string, db_name, collection_name, search_field):
+    def __init__(self, connection_string, db_name, collection_name):
         self.client = MongoClient(connection_string)
         self.db_name = db_name
         self.collection_name = collection_name
-        self.search_field = search_field
-    
+
+    def store_embedding_vector(self, embedding_vector, file_path):
+        self.client[self.db_name][self.collection_name].insert_one({
+            "file_path": file_path,
+            "file_embedding": embedding_vector.tolist()
+        })
+
     def save_search_index(self):
         search_index_model = SearchIndexModel(
             definition={
                 "fields": [
                     {
                         "type": "vector",
-                        "path": self.search_field,
+                        "path": "file_embedding",
                         "numDimensions": 1536,
                         "similarity": "cosine",
                         "quantization": "scalar"
@@ -48,7 +53,7 @@ class VectorDatabase:
             {
                 '$vectorSearch': {
                     'index': 'vector_index', 
-                    'path': self.search_field, 
+                    'path': "file_embedding", 
                     'queryVector': query_embedding, 
                     'numCandidates': 75, 
                     'limit': 5

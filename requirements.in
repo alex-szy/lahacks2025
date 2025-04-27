@@ -4,3 +4,4 @@ pywin32
 PyMuPDF
 python-docx
 python-dotenv
+pymongo

@@ -3,16 +3,12 @@ import shutil
 import numpy as np
 from typing import Optional
 from engine.encoder import Encoder
-
-import os
-from dotenv import load_dotenv
-
-import sys
-# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from db.database import VectorDatabase
 from models.file import File
 from utilities.preprocessor import Preprocessor
 from classifier.classifier import Classifier
+
+# from dotenv import load_dotenv
 
 
 class SaveProcessor:
@@ -34,7 +30,7 @@ class SaveProcessor:
 
         # 4. Move file to target folder
         new_file_path = self._move_file(file.path, target_folder)
-        print('prepare save')
+
         # 5. Save embedding + new file path into database
         self.db.store_embedding_vector(embedding.tolist(), new_file_path)
 
@@ -48,11 +44,7 @@ class SaveProcessor:
         os.makedirs(target_folder, exist_ok=True)
         filename = os.path.basename(original_path)
         new_path = os.path.join(target_folder, filename)
-        print("C")
         shutil.move(original_path, new_path)
-        print("A")
-        print(new_path)
-        print("B")
 
         return new_path
 

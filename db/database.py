@@ -36,8 +36,7 @@ class VectorDatabase:
     Output:
         result: List[Dict] (descending order of similarity score, dict contains "file_path" key)
     """
-    # def get_query_results(self, query_embedding, num_candidates=50, limit=15):
-    def get_query_results(self, query_embedding, num_candidates=2, limit=1):
+    def get_query_results(self, query_embedding, num_candidates=20, limit=10):
         client = MongoClient(self.connection_string)
         pipeline = [
             {

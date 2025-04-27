@@ -72,7 +72,7 @@ class MainWindow(QMainWindow):
 
         # ---------- Stacked pages --------------------------------------
         self.pages = QStackedWidget()
-        self.home   = HomePage(self.on_search, self.open_item)
+        self.home   = HomePage(self.open_item)
         self.watch  = WatchPage(self.backend_add_watch)  # pass your backend hook
         self.dest = DestinationPage()
         self.pages.addWidget(self.home)   # index 0

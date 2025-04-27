@@ -13,18 +13,29 @@ class QueryProcessor:
         self.db = db
 
     def process_query(self, query: str, return_length: int = 5) -> List[File]:
-        query_vec: List[float] = self.encoder.encode_query(query)        # now a plain list
+        query_vec: List[float] = self.encoder.encode_query(query).tolist()        # now a plain list
         raw_rows: List[Dict] = self.db.get_query_results(query_vec)
 
-        unique_rows: List[Dict] = self._deduplicate_rows(raw_rows, return_length)
-        return self._build_files(unique_rows)
-
-    def _deduplicate_rows(self, rows: List[Dict], limit: int) -> List[Dict]:
-        """Drop duplicates (by file_path) and truncate to `limit` rows."""
         unique: List[Dict] = []
         seen: Set[str] = set()
 
+        for row in raw_rows:
+            print(row)
+            fp = row["file_path"]
+            if fp in seen:
+                continue
+            seen.add(fp)
+            unique.append(row)
+    
+        return self._build_files(unique)
+
+    def _deduplicate_rows(self, rows, limit: int) -> List[Dict]:
+        """Drop duplicates (by file_path) and truncate to `limit` rows."""
+        unique: List[Dict] = []
+        seen: Set[str] = set()
+        print("here")
         for row in rows:
+            print(row)
             fp = row["file_path"]
             if fp in seen:
                 continue
@@ -48,7 +59,7 @@ class QueryProcessor:
                     content = fh.read()
 
                 file_obj = File(
-                    content=content,
+                    content="",
                     name=os.path.basename(fp),
                     path=fp,
                     size_bytes=stat.st_size,
@@ -60,7 +71,12 @@ class QueryProcessor:
 
             except FileNotFoundError:
                 # Skip missing files; replace with logging if desired
-                continue
+                file_obj = File(
+                    content="",
+                    name=fp,
+                )
+                file_obj.add_summary(summary)
+                files.append(file_obj)
 
         return files
 

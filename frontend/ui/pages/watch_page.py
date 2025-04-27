@@ -2,8 +2,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import List
 
-import tkinter as tk
-from tkinter import filedialog
+from commands.watch import _add as r_add
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (

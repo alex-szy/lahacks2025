@@ -6,3 +6,6 @@ python-docx
 python-dotenv
 pymongo
 click
+sentence-transformers
+faiss-cpu
+numpy

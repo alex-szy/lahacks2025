@@ -1,7 +1,7 @@
 from sentence_transformers import SentenceTransformer
 import numpy as np
 from typing import Optional
-from utilities.file_preprocess import Preprocessor
+from utilities.preprocessor import Preprocessor
 from models.file import File
 
 class Encoder:

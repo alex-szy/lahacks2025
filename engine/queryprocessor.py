@@ -5,10 +5,11 @@ from collections import defaultdict
 from typing import List, Dict, Tuple
 import numpy as np
 from encoder.encoder import Encoder
+from db.database import VectorDatabase
 # from database import DB  # Assume your teammate will implement this
 
 class QueryProcessor:
-    def __init__(self, encoder: Encoder, db) -> None:
+    def __init__(self, encoder: Encoder, db: VectorDatabase) -> None:
         self.encoder = encoder
         self.db = db  # DB object - treat as blackbox
 
@@ -19,7 +20,7 @@ class QueryProcessor:
         3. Receive a list of relevant file paths
         """
         query_vector: np.ndarray = self.encoder.encode_query(query)
-        file_paths: List[str] = self.db.check_query(query_vector)
+        file_paths: List[str] = [x['filepath'] for x in self.db.get_query_results(query_vector)]
         return file_paths
 
 #OLD CODE

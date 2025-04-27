@@ -1,4 +1,6 @@
 watchdog
+requests
 pywin32
 PyMuPDF
 python-docx
+python-dotenv

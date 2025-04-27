@@ -27,3 +27,6 @@ class WatcherHandler(FileSystemEventHandler):
                 logging.info(f"File moved to {path}")
         except Exception as e:
             logging.error(e)
+
+    def on_modified(self, event):
+        return self.on_created(event)

@@ -1,5 +1,6 @@
 import json
 from os import PathLike
+import os
 from typing import Union
 from settings import FOLDER_PATHS_FILE
 
@@ -9,24 +10,25 @@ class FileSystemConfig:
         self.json_path = json_path
 
     def append_entry(self, path: str, description: str) -> None:
-        data = json.loads(self.json_path.read_text())
+        data = json.load(open(self.json_path))
 
         data.append({
             "file_path": path,
             "description": description
         })
 
-        self.json_path.write_text(json.dumps(data, indent=2))
+        json.dump(data, open(self.json_path, "w"), indent=2)
 
     def remove_entry(self, path: str) -> None:
-        data = json.loads(self.json_path.read_text())
+        data = json.load(open(self.json_path))
 
-        data = [entry for entry in data if entry.get("file_path") != path]
+        data = [entry for entry in data if os.path.normpath(
+            entry.get("file_path")) != path]
 
-        self.json_path.write_text(json.dumps(data, indent=2))
+        json.dump(data, open(self.json_path, "w"), indent=2)
 
     def read_all_entries(self) -> dict[str, dict]:
-        data = json.loads(self.json_path.read_text())
+        data = json.load(open(self.json_path))
         result = {}
         for entry in data:
             result[entry["file_path"]] = {

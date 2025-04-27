@@ -1,5 +1,8 @@
 import click
+import os
 from utilities.file_system_config import FileSystemConfig
+from daemon import service
+from commands.start import _start
 
 
 @click.group()
@@ -10,13 +13,17 @@ def assoc():
 
 def _add(folder_path, description):
     cfg = FileSystemConfig()
-    cfg.append_entry(folder_path, description)
+    cfg.append_entry(os.path.normpath(folder_path), description)
     click.echo(f"Sucessfully added: {folder_path}, {description}")
+    service.stop()
+    _start()
 
 
 def _remove(folder_path):
     cfg = FileSystemConfig()
-    cfg.remove_entry(folder_path)
+    cfg.remove_entry(os.path.normpath(folder_path))
+    service.stop()
+    _start()
 
 
 def _list_assoc():

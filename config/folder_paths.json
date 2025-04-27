@@ -1,10 +1,14 @@
 [
   {
-    "file_path": "C:\\Users\\zhero\\Desktop\\Jerome\\UCLA\\Academics\\Classes\\Quarter 9-Spring 2025\\cooking",
-    "description": "Cooking food for my son"
+    "file_path": "/root/test_lahacks2025/baseball/",
+    "description": "Baseball highlights"
   },
   {
-    "file_path": "C:\\Users\\zhero\\Desktop\\Jerome\\UCLA\\Academics\\Classes\\Quarter 9-Spring 2025\\machine_learning",
-    "description": "Artificial intelligence Big Data Blockchain"
+    "file_path": "/root/test_lahacks2025/gaming/",
+    "description": "My favorite video games"
+  },
+  {
+    "file_path": "/root/test_lahacks2025/books/",
+    "description": "Classic stories"
   }
 ]

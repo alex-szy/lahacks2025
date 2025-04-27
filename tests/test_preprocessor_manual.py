@@ -1,5 +1,5 @@
 import os
-from utilities.file_preprocess import Preprocessor
+from utilities.preprocessor import Preprocessor
 from models.file import File
 
 def manual_test_preprocessing():

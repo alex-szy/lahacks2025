@@ -7,6 +7,9 @@ class VectorDatabase:
         self.connection_string = connection_string
         self.db_name = "file_system"
         self.collection_name = "embedded_file"
+        client = MongoClient(self.connection_string)
+        print('connected')
+        client.close()
 
     """
     Stores embedding vector to db

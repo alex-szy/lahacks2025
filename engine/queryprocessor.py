@@ -4,7 +4,7 @@ from collections import defaultdict
 
 from typing import List, Dict, Tuple
 import numpy as np
-from encoder.encoder import Encoder
+from engine.encoder import Encoder
 from db.database import VectorDatabase
 # from database import DB  # Assume your teammate will implement this
 

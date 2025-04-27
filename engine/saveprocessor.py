@@ -35,7 +35,7 @@ class SaveProcessor:
 
         # 4. Move file to target folder
         new_file_path = self._move_file(file.path, target_folder)
-
+        print('prepare save')
         # 5. Save embedding + new file path into database
         self.db.store_embedding_vector(embedding.tolist(), new_file_path)
 
@@ -49,8 +49,12 @@ class SaveProcessor:
         os.makedirs(target_folder, exist_ok=True)
         filename = os.path.basename(original_path)
         new_path = os.path.join(target_folder, filename)
-        # shutil.move(original_path, new_path)
+        print("C")
+        shutil.move(original_path, new_path)
+        print("A")
         print(new_path)
+        print("B")
+
         return new_path
 
 if __name__ == "__main__":
@@ -62,4 +66,4 @@ if __name__ == "__main__":
     print(MONGO_URI)
     db = VectorDatabase(MONGO_URI)
     saveprocess = SaveProcessor(encoder=Encoder(), classifier=Classifier(), db=db)
-    saveprocess.process_and_save("experiment.txt")
+    saveprocess.process_and_save("C:\\Users\\zhero\\Desktop\\Jerome\\UCLA\\Academics\\Classes\\Quarter 9-Spring 2025\\the art of meal preparing.txt")

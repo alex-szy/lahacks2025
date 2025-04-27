@@ -2,6 +2,8 @@ import click
 import json
 from pathlib import Path
 from settings import WATCH_PATHS_FILE
+from daemon import service
+from commands.start import _start
 # Path to the watch paths JSON file
 
 
@@ -47,6 +49,8 @@ def _add(folder_path: str):
     paths.append(folder_path)
     save_watch_paths(paths)
     click.echo(f"Added folder '{folder_path}' to watch list.")
+    service.stop()
+    _start()
 
 
 def _remove(folder_path: str):
@@ -61,6 +65,8 @@ def _remove(folder_path: str):
     paths.remove(folder_path)
     save_watch_paths(paths)
     click.echo(f"Removed folder '{folder_path}' from watch list.")
+    service.stop()
+    _start()
 
 
 def _list_watch():

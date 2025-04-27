@@ -12,9 +12,7 @@ def stop():
     """
     Stops the Munchkin Daemon
     """
-    if (pid := service.get_pid()) is not None:
+    if service.stop():
         click.echo("Stopping Munchkin daemon...")
-        os.kill(pid, signal.SIGTERM)
-        service.remove_pid_file()
     else:
         click.echo("Munchkin daemon doesn't seem to be running...")

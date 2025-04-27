@@ -140,6 +140,13 @@ class DaemonService:
         self.remove_pid_file()
         sys.exit(0)
 
+    def stop(self):
+        if (pid := self.get_pid()) is not None:
+            os.kill(pid, signal.SIGTERM)
+            self.remove_pid_file()
+            return True
+        return False
+
 
 service = DaemonService()
 

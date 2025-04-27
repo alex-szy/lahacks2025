@@ -47,9 +47,9 @@ class Classifier:
     def _classify_file(self, summary: str, file_name: str, folder_paths: list[str], folder_descriptions: list[str]) -> str:
         classification_prompt = build_classification_prompt(
             summary, file_name, folder_paths, folder_descriptions)
-        logging.debug(f"classification prompt is: {classification_prompt}")
+        logging.info(f"classification prompt is: {classification_prompt}")
         response = self.classification_model.call(classification_prompt)
-        logging.debug(f"Classification is: {response}")
+        logging.info(f"Classification is: {response}")
         return response
 
     def _validate_response(self, response: str, folder_paths: list[str]) -> Optional[str]:

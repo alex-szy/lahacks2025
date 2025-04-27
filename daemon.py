@@ -114,7 +114,7 @@ class DaemonService:
     def start(self):
         logging.basicConfig(
             filename=BASE_DIR / "mckndaemon.log",
-            level=logging.DEBUG,
+            level=logging.INFO,
             format="%(asctime)s - %(levelname)s - %(message)s"
         )
         if self.get_pid() is not None:

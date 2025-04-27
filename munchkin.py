@@ -8,7 +8,7 @@ from settings import BASE_DIR
 
 logging.basicConfig(
     filename=BASE_DIR / "munchkin.log",
-    level=logging.DEBUG,
+    level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 

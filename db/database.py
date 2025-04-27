@@ -10,7 +10,7 @@ class VectorDatabase:
         self.db_name = "file_system"
         self.collection_name = "embedded_file"
         client = MongoClient(self.connection_string)
-        logging.debug('connected to database')
+        logging.info('connected to database')
         client.close()
 
     """
@@ -90,9 +90,9 @@ class VectorDatabase:
 
         result = client[self.db_name][self.collection_name].create_search_index(
             model=search_index_model)
-        logging.debug("New search index named " + result + " is building.")
+        logging.info("New search index named " + result + " is building.")
 
-        logging.debug(
+        logging.info(
             "Polling to check if the index is ready. This may take up to a minute.")
         predicate = None
         if predicate is None:
@@ -104,5 +104,5 @@ class VectorDatabase:
             if len(indices) and predicate(indices[0]):
                 break
             time.sleep(5)
-        logging.debug(result + " is ready for querying.")
+        logging.info(result + " is ready for querying.")
         client.close()

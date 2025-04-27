@@ -2,3 +2,6 @@ watchdog
 pywin32
 PyMuPDF
 python-docx
+sentence-transformers
+faiss-cpu
+numpy

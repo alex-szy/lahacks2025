@@ -32,7 +32,7 @@ class SaveProcessor:
         new_file_path = self._move_file(file.path, target_folder)
 
         # 5. Save embedding + new file path into database
-        self.db.store_embedding_vector(embedding.tolist(), new_file_path)
+        self.db.store_embedding_vector(embedding.tolist(), new_file_path, file.summary)
 
     def _load_file(self, file_path: str) -> File:
         with open(file_path, "rb") as f:

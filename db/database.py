@@ -19,11 +19,12 @@ class VectorDatabase:
     Output:
         None
     """
-    def store_embedding_vector(self, embedding_vector, file_path):
+    def store_embedding_vector(self, embedding_vector, file_path, file_summary):
         client = MongoClient(self.connection_string)
         client[self.db_name][self.collection_name].insert_one({
             "file_path": file_path,
-            "file_embedding": embedding_vector
+            "file_embedding": embedding_vector,
+            "file_summary": file_summary
         })
         client.close()
     
@@ -52,6 +53,7 @@ class VectorDatabase:
                 '$project': {
                     '_id': 0, 
                     'file_path': 1,
+                    'file_summary': 1,
                     'score': {
                         '$meta': 'vectorSearchScore'
                     }

@@ -28,7 +28,7 @@ class DaemonService:
             format="%(asctime)s - %(levelname)s - %(message)s"
         )
 
-    def is_another_instance_running(self):
+    def get_pid(self):
         if PID_FILE.exists():
             try:
                 with PID_FILE.open("r") as f:
@@ -39,11 +39,11 @@ class DaemonService:
                         # Optionally check cmdline to be 100% sure it's your daemon
                         cmdline = p.cmdline()
                         if any("daemon.py" in part for part in cmdline):
-                            return True
+                            return pid
             except Exception:
                 # If error reading PID, assume stale file
                 pass
-        return False
+        return None
 
     def write_pid_file(self):
         with PID_FILE.open("w") as f:
@@ -118,7 +118,7 @@ class DaemonService:
             logging.info("Observers stopped.")
 
     def start(self):
-        if self.is_another_instance_running():
+        if self.get_pid() is not None:
             logging.error(
                 "Another Munchkin daemon is already running. Exiting.")
             sys.exit(1)

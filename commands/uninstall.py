@@ -1,9 +1,17 @@
 import click
+import subprocess
 
 
 @click.command()
 def uninstall():
     """
-    Removes munchkin as an installed service
+    Stop running munchkin at logon
     """
-    pass
+    subprocess.run([
+        "schtasks",
+        "/Delete",
+        "/TN", "MunchkinDaemon",
+        "/F"
+    ], check=False, stderr=subprocess.DEVNULL)
+
+    click.echo("Scheduled task 'MunchkinDaemon' deleted.")

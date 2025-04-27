@@ -2,15 +2,20 @@ import os
 import shutil
 import numpy as np
 from typing import Optional
-from utilities.preprocessor import Preprocessor
-from models.file import File
-from encoder.encoder import Encoder
-from db.database import VectorDatabase
-from classifier.classifier import Classifier
+from engine.encoder import Encoder
 
 import os
 from dotenv import load_dotenv
 from pymongo import MongoClient
+
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from db.database import VectorDatabase
+from models.file import File
+from utilities.preprocessor import Preprocessor
+from classifier.classifier import Classifier
+
+
 class SaveProcessor:
     def __init__(self, encoder: Encoder, classifier: Classifier, db: VectorDatabase, token_threshold: Optional[int] = None) -> None:
         self.encoder = encoder
@@ -49,19 +54,12 @@ class SaveProcessor:
         return new_path
 
 if __name__ == "__main__":
-
-
 # Load the .env file
     load_dotenv()
 
     # Fetch values
     MONGO_URI = os.getenv("MONGO_URI")
-    DB_NAME = os.getenv("DB_NAME")
-    COLLECTION_NAME = os.getenv("COLLECTION_NAME")
-
-    # Connect
-    client = MongoClient(MONGO_URI)
-    db = client[DB_NAME]
-    collection = db[COLLECTION_NAME]
-    saveprocess = SaveProcessor(encoder=Encoder(), classifier=Classifier(), db=VectorDatabase())
-    saveprocess.process_and_save("path")
+    print(MONGO_URI)
+    db = VectorDatabase(MONGO_URI)
+    saveprocess = SaveProcessor(encoder=Encoder(), classifier=Classifier(), db=db)
+    saveprocess.process_and_save("experiment.txt")

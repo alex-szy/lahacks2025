@@ -1,18 +1,18 @@
-from typing import List
+from typing import List, Dict
 import numpy as np
 from engine.encoder import Encoder
 from db.database import VectorDatabase
 
-# import os
-# from dotenv import load_dotenv
+import os
+from dotenv import load_dotenv
 
 
 class QueryProcessor:
     def __init__(self, encoder: Encoder, db: VectorDatabase) -> None:
         self.encoder = encoder
-        self.db = db  # DB object - treat as blackbox
+        self.db = db
 
-    def process_query(self, query: str, return_length=5) -> List[str]:
+    def process_query(self, query: str, return_length=5) -> List[Dict]:
         """
         1. Encode the natural language query to an embedding vector
         2. Send the query vector to the database
@@ -27,20 +27,20 @@ class QueryProcessor:
             if file_path in seen:
                 continue
             seen.add(file_path)
-            file_paths.append(file_path)
+            file_paths.append(r)
             if len(file_paths) >= return_length:
                 break
         return file_paths
 
-# if __name__ == "__main__":
-#     load_dotenv()
-#     MONGO_URI = os.getenv("MONGO_URI")
+if __name__ == "__main__":
+    load_dotenv()
+    MONGO_URI = os.getenv("MONGO_URI")
 
-#     db = VectorDatabase(MONGO_URI)
-#     qp = QueryProcessor(Encoder(), db=db)
+    db = VectorDatabase(MONGO_URI)
+    qp = QueryProcessor(Encoder(), db=db)
     
-#     query = "Search for my most played video game"
-#     res = qp.process_query(query)
+    query = "Search for my most played video game"
+    res = qp.process_query(query)
 
-#     for r in res:
-#         print(r)
+    for r in res:
+        print(r)

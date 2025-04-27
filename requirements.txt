@@ -10,10 +10,6 @@ charset-normalizer==3.4.1
     # via requests
 click==8.1.8
     # via -r requirements.in
-colorama==0.4.6
-    # via
-    #   click
-    #   tqdm
 dnspython==2.7.0
     # via pymongo
 faiss-cpu==1.10.0

@@ -4,9 +4,9 @@ import sys
 import subprocess
 import tempfile
 from pathlib import Path
-from settings import BASE_DIR
+from settings import BASE_DIR, ASSETS_DIR
 
-TEMPLATE_XML = BASE_DIR / "munchkin_template.xml"
+TEMPLATE_XML = ASSETS_DIR / "munchkin_template.xml"
 TASK_NAME = "MunchkinDaemon"
 PYTHON_PATH = Path(sys.executable).resolve().parent
 

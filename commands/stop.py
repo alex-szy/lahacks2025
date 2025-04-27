@@ -1,5 +1,4 @@
 import click
-import psutil
 import os
 import signal
 from settings import BASE_DIR

@@ -7,12 +7,12 @@ import sys
 import os
 import psutil
 from engine.watcher import WatcherHandler
-from settings import BASE_DIR, WATCH_PATHS_FILE
+from settings import BASE_DIR, ASSETS_DIR, WATCH_PATHS_FILE
 from watchdog.observers import Observer
 import pystray
 from PIL import Image, ImageDraw
 
-PID_FILE = BASE_DIR / "munchkin.pid"
+PID_FILE = BASE_DIR / "daemon.pid"
 
 
 class DaemonService:
@@ -65,7 +65,7 @@ class DaemonService:
 
     def create_image(self):
         try:
-            return Image.open(BASE_DIR / "munchkin.ico")
+            return Image.open(ASSETS_DIR / "munchkin.ico")
         except Exception as e:
             logging.error(f"Failed to load tray icon: {e}")
             # fallback simple black circle

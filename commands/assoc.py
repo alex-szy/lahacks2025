@@ -19,7 +19,7 @@ def _remove(folder_path):
     cfg.remove_entry(folder_path)
 
 
-def _list():
+def _list_assoc():
     cfg = FileSystemConfig()
     path_list = cfg.read_all_entries()
 
@@ -48,4 +48,4 @@ def remove(folder_path):
 @assoc.command(name="list")
 def list_assoc():
     """List folder associations."""
-    _list()
+    _list_assoc()

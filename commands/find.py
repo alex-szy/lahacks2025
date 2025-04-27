@@ -3,10 +3,7 @@ import os
 from settings import MONGO_URI
 
 
-@click.command()
-@click.argument('query')
-def find(query: str):
-    """Semantic search for files using a QUERY string and return file paths."""
+def _find(query: str):
     from db.database import VectorDatabase
     from engine.encoder import Encoder
     from engine.queryprocessor import QueryProcessor
@@ -17,3 +14,10 @@ def find(query: str):
 
     for r in res:
         click.echo(r)
+
+
+@click.command()
+@click.argument('query')
+def find(query: str):
+    """Semantic search for files using a QUERY string and return file paths."""
+    _find(query)

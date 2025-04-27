@@ -30,10 +30,7 @@ def watch():
     pass
 
 
-@watch.command()
-@click.argument('folder_path', type=click.Path(exists=True, file_okay=False, resolve_path=True))
-def add(folder_path):
-    """Add a watch folder."""
+def _add(folder_path: str):
     folder_path = str(Path(folder_path).resolve())
 
     if is_forbidden(folder_path):
@@ -52,10 +49,7 @@ def add(folder_path):
     click.echo(f"Added folder '{folder_path}' to watch list.")
 
 
-@watch.command()
-@click.argument('folder_path', type=click.Path(file_okay=False, resolve_path=True))
-def remove(folder_path):
-    """Remove a watch folder."""
+def _remove(folder_path: str):
     folder_path = str(Path(folder_path).resolve())
 
     paths = load_watch_paths()
@@ -69,12 +63,30 @@ def remove(folder_path):
     click.echo(f"Removed folder '{folder_path}' from watch list.")
 
 
-@watch.command(name="list")
-def list_watch():
-    """List watch folders."""
+def _list_watch():
     paths = load_watch_paths()
     if not paths:
         click.echo("No watch folders configured.")
     else:
         for path in paths:
             click.echo(path)
+
+
+@watch.command()
+@click.argument('folder_path', type=click.Path(exists=True, file_okay=False, resolve_path=True))
+def add(folder_path):
+    """Add a watch folder."""
+    _add(folder_path)
+
+
+@watch.command()
+@click.argument('folder_path', type=click.Path(file_okay=False, resolve_path=True))
+def remove(folder_path):
+    """Remove a watch folder."""
+    _remove(folder_path)
+
+
+@watch.command(name="list")
+def list_watch():
+    """List watch folders."""
+    _list_watch()

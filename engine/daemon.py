@@ -1,12 +1,12 @@
-# file: file_watcher_windows_service.py
-
 import win32serviceutil
 import win32service
 import win32event
 import logging
 import time
+import json
+import os
 from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
+from watcher import WatcherHandler
 
 logging.basicConfig(
     filename="C:\\Users\\suziy\\Desktop\\file_watcher.log",
@@ -14,19 +14,8 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
-
-class WatcherHandler(FileSystemEventHandler):
-    def on_created(self, event):
-        if not event.is_directory:
-            logging.info(f"Created: {event.src_path}")
-
-    def on_modified(self, event):
-        if not event.is_directory:
-            logging.info(f"Modified: {event.src_path}")
-
-    def on_deleted(self, event):
-        if not event.is_directory:
-            logging.info(f"Deleted: {event.src_path}")
+CONFIG_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "config")
+WATCH_PATHS_FILE = os.path.join(CONFIG_DIR, "watch_paths.json")
 
 
 class FileWatcherService(win32serviceutil.ServiceFramework):
@@ -46,19 +35,27 @@ class FileWatcherService(win32serviceutil.ServiceFramework):
 
     def SvcDoRun(self):
         logging.info("Starting service")
+        logging.info(f"Watch paths file at: {WATCH_PATHS_FILE}")
+        try:
+            watch_paths = json.load(open(WATCH_PATHS_FILE))
+            logging.info(f"Watching directories: {watch_paths}")
 
-        watch_path = "C:\\Users\\suziy\\Downloads"
-        event_handler = WatcherHandler()
-        observer = Observer()
-        observer.schedule(event_handler, watch_path, recursive=True)
-        observer.start()
+            # Instantiate an observer for every watched directory
+            observers = [Observer() for _ in watch_paths]
+            for observer, watch_path in zip(observers, watch_paths):
+                observer.schedule(WatcherHandler(), watch_path, recursive=True)
+                observer.start()
 
-        while self.running:
-            time.sleep(1)
+            while self.running:
+                time.sleep(1)
 
-        observer.stop()
-        observer.join()
-        logging.info("Stopping service")
+            for observer in observers:
+                observer.stop()
+                observer.join()
+
+            logging.info("Stopping service")
+        except Exception as e:
+            logging.error(e)
 
 
 if __name__ == "__main__":

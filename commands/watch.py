@@ -1,7 +1,7 @@
 import click
 import json
 from pathlib import Path
-from ..settings import WATCH_PATHS_FILE
+from settings import WATCH_PATHS_FILE
 # Path to the watch paths JSON file
 
 

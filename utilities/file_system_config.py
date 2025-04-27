@@ -1,7 +1,7 @@
 import json
 from os import PathLike
 from typing import Union
-from ..settings import FOLDER_PATHS_FILE
+from settings import FOLDER_PATHS_FILE
 
 
 class FileSystemConfig:

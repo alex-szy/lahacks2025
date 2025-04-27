@@ -1,27 +1,23 @@
-from __future__ import annotations
-
+# near the top
 import sys
-from pathlib import Path
 
-from frontend.ui.widgets.file_card import FileCard
+from PySide6.QtWidgets import QStackedWidget
+from frontend.ui.pages.home_page import HomePage
+from frontend.ui.pages.watch_page import WatchPage
 from frontend.ui.widgets.nav_button import NavButton
-from frontend.utils.icons import icon
-
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont
+from pathlib import Path
+from frontend.utils.icons import icon    # new helper name
 from PySide6.QtWidgets import (
-    QApplication,
     QFrame,
     QHBoxLayout,
-    QLabel,
-    QLineEdit,
-    QListWidget,
     QListWidgetItem,
     QMainWindow,
     QVBoxLayout,
     QWidget,
+    QApplication,
 )
-
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -29,6 +25,18 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Semantic File Explorer")
         self.resize(1050, 660)
         self._build_ui()
+    
+    def on_search(self, text: str):
+        # TODO: backend search integration
+        print("Search:", text)
+
+    def open_item(self, item: QListWidgetItem):
+        card = self.results_list.itemWidget(item)
+        print("Open", card.path)
+    
+    def backend_add_watch(self, path: Path):
+        print(">> Watch this folder in backend:", path)
+        # TODO: plug into your FileSystemConfig / observer logic
 
     def _build_ui(self):
         central = QWidget()
@@ -36,7 +44,7 @@ class MainWindow(QMainWindow):
         root = QHBoxLayout(central)
         root.setContentsMargins(0, 0, 0, 0)
 
-        # Sidebar -----------------------------------------------------------
+        # ---------- Sidebar --------------------------------------------
         sidebar = QFrame()
         sidebar.setFixedWidth(72)
         sidebar.setStyleSheet("background:#ffffff; border-right:1px solid #ffffff;")
@@ -46,99 +54,40 @@ class MainWindow(QMainWindow):
         side_lay.setSpacing(10)
 
         btn_info = [
-            (icon("watch"), "Watch Folders"),
-            (icon("folder"), "Folders"),
-            (icon("keys"), "API Keys"),
-            (icon("settings"), "Settings"),
-            (icon("login"), "Login"),
+            ("search",     "Search"),          # ← new home button
+            ("watch",    "Watch Folders"),
+            ("folder",   "Folders"),
+            ("keys",     "API Keys"),
+            ("settings", "Settings"),
+            ("login",    "Login"),
         ]
         self.nav_btns = []
-        for icn, tip in btn_info:
-            b = NavButton(icn, tip)
+        for key, tip in btn_info:
+            b = NavButton(icon(key), tip)
             side_lay.addWidget(b)
             self.nav_btns.append(b)
         side_lay.addStretch(1)
 
-        # Content -----------------------------------------------------------
-        content = QWidget()
-        c_lay = QVBoxLayout(content)
-        c_lay.setContentsMargins(32, 24, 32, 24)
-        c_lay.setSpacing(24)
+        # ---------- Stacked pages --------------------------------------
+        self.pages = QStackedWidget()
+        self.home   = HomePage(self.on_search, self.open_item)
+        self.watch  = WatchPage(self.backend_add_watch)  # pass your backend hook
+        self.pages.addWidget(self.home)   # index 0
+        self.pages.addWidget(self.watch)  # index 1
+        # add more pages later …
 
-        # Search bar -------------------------------------------------------
-        self.search_edit = QLineEdit()
-        self.search_edit.setPlaceholderText("Search for a file ...")
-        self.search_edit.setFixedHeight(46)
-        self.search_edit.setStyleSheet(
-            """
-            QLineEdit {
-                background: #ffffff;
-                color: #222222;
-                font-family: "Poppins", sans-serif;
-                font-size: 14px;
-                border: 1px solid #d4d4d4;
-                border-radius: 23px;
-                padding-left: 48px;
-            }
-            QLineEdit:focus {
-                border-color: #7a74ff;
-            }
-            QLineEdit::placeholder {
-                color: #999999;
-            }
-            """
-        )
-        magnifier = QLabel(self.search_edit)
-        magnifier.setPixmap(icon("search", 24).pixmap(24, 24))
-        magnifier.move(16, 11)
-        self.search_edit.textChanged.connect(self.on_search)
-        c_lay.addWidget(self.search_edit)
-
-        # Results list ------------------------------------------------------
-        self.results_list = QListWidget()
-        self.results_list.setFrameShape(QFrame.NoFrame)
-        self.results_list.setSpacing(4)
-        self.results_list.itemClicked.connect(self.open_item)
-        self.results_list.setStyleSheet(
-            """
-            QListWidget { border:none; background:#ffffff; }
-            QListWidget::item:selected { background:#ebf0ff; border-radius:6px; }
-            """
-        )
-        c_lay.addWidget(self.results_list)
-
-        # Assemble ---------------------------------------------------------
         root.addWidget(sidebar)
-        root.addWidget(content)
+        root.addWidget(self.pages)        # ← replace “content” with pages
         self.setCentralWidget(central)
 
-        self.populate_demo()
-
-    # --------------------------- Demo / Backend ---------------------------
-
-    def populate_demo(self):
-        sample = list(Path(__file__).parent.glob("*.py"))[:6]
-        self.results_list.clear()
-        for p in sample:
-            card = FileCard(p)
-            item = QListWidgetItem(self.results_list)
-            item.setSizeHint(card.sizeHint())
-            self.results_list.setItemWidget(item, card)
-
-    # --------------------------- Callbacks --------------------------------
-
-    def on_search(self, text: str):
-        # TODO: backend search integration
-        print("Search:", text)
-
-    def open_item(self, item: QListWidgetItem):
-        card = self.results_list.itemWidget(item)
-        print("Open", card.path)
-
+        # default to Home
+        self.nav_btns[0].setChecked(True)
+        for i, btn in enumerate(self.nav_btns):
+            btn.clicked.connect(lambda _, ix=i: self.pages.setCurrentIndex(ix))
 
 def main():
     app = QApplication(sys.argv)
-    app.setFont(QFont("Poppins", 10))
+    app.setFont(QFont("Helvetica Neue", 10))
     app.setStyle("Fusion")
     win = MainWindow()
     win.show()

@@ -17,12 +17,14 @@ ICON_MAP = {
     "login": HERE / "icons/user.svg",
     "search": HERE / "icons/search.svg",
     "file": HERE / "icons/file.svg",
+    "pdf": HERE / "icons/pdf.svg",
+    "txt": HERE / "icons/txt.svg",
+    "csv": HERE / "icons/csv.svg",
 }
 
 
 def icon(name: str, size: int = 200) -> QIcon:
     path = ICON_MAP.get(name)
-    print(path)
     if path and path.exists():
         return QIcon(str(path))
     # graceful fallback to built‑in if custom SVG missing

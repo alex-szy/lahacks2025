@@ -3,7 +3,7 @@ import os
 
 
 class File:
-    def __init__(self, content: bytes, name: str, extension: Optional[str] = None,
+    def __init__(self, content: bytes, name: str, summary: Optional[str] = None, extension: Optional[str] = None,
                  path: Optional[str] = None, size_bytes: Optional[int] = None,
                  created_at: Optional[str] = None, modified_at: Optional[str] = None):
         if not name:
@@ -16,7 +16,7 @@ class File:
         self.size_bytes = size_bytes
         self.created_at = created_at
         self.modified_at = modified_at
-        self.summary = ""
+        self.summary = summary
 
     def add_summary(self, summary: str) -> None:
         self.summary = summary
@@ -26,4 +26,4 @@ class File:
         return ext.lstrip('.') if ext else None
 
     def __repr__(self):
-        return f"File(name={self.name}, extension={self.extension})"
+        return f"File(name={self.name}, summary={self.summary}, extension={self.extension})"

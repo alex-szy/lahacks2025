@@ -20,7 +20,6 @@ class QueryProcessor:
         seen: Set[str] = set()
 
         for row in raw_rows:
-            print(row)
             fp = row["file_path"]
             if fp in seen:
                 continue
@@ -29,53 +28,35 @@ class QueryProcessor:
     
         return self._build_files(unique)
 
-    def _deduplicate_rows(self, rows, limit: int) -> List[Dict]:
-        """Drop duplicates (by file_path) and truncate to `limit` rows."""
-        unique: List[Dict] = []
-        seen: Set[str] = set()
-        print("here")
-        for row in rows:
-            print(row)
-            fp = row["file_path"]
-            if fp in seen:
-                continue
-            seen.add(fp)
-            unique.append(row)
-            if len(unique) == limit:
-                break
-        return unique
-
     def _build_files(self, rows: List[Dict]) -> List[File]:
         """Turn DB rows into File objects enriched with metadata & summary."""
         files: List[File] = []
 
         for row in rows:
             fp: str = row["file_path"]
-            summary: str = row.get("summary", "")
+            summary: str = row.get("file_summary", "")
 
             try:
                 stat = os.stat(fp)
-                with open(fp, "rb") as fh:
-                    content = fh.read()
 
                 file_obj = File(
                     content="",
                     name=os.path.basename(fp),
                     path=fp,
+                    summary=summary,
                     size_bytes=stat.st_size,
                     created_at=dt.datetime.fromtimestamp(stat.st_ctime).isoformat(),
                     modified_at=dt.datetime.fromtimestamp(stat.st_mtime).isoformat(),
                 )
-                file_obj.add_summary(summary)
                 files.append(file_obj)
 
             except FileNotFoundError:
                 # Skip missing files; replace with logging if desired
                 file_obj = File(
                     content="",
+                    summary=summary,
                     name=fp,
                 )
-                file_obj.add_summary(summary)
                 files.append(file_obj)
 
         return files

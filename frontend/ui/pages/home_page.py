@@ -3,7 +3,6 @@ from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QLineEdit, QLabel,
     QListWidget, QListWidgetItem, QFrame
 )
-import time
 from frontend.utils.icons import icon
 from frontend.ui.widgets.file_card import FileCard
 from typing import List
@@ -76,10 +75,7 @@ class HomePage(QWidget):
             return
 
         try:
-            start = time.perf_counter()
             matches: list[File] | None = r_find(query)
-            print(matches)
-            print(f"SEARCH TOOK {(time.perf_counter() - start)*1000:.2f} ms")
         except Exception as exc:  # defensive: don’t crash the UI
             print(f"search error: {exc}")
             matches = None

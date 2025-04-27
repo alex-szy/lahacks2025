@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent
 CONFIG_DIR = BASE_DIR / "config"
+ASSETS_DIR = BASE_DIR / "assets"
 
 if not CONFIG_DIR.exists():
     raise Exception(f"Config folder not found: {CONFIG_DIR}")

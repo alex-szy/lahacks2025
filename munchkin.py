@@ -1,5 +1,4 @@
 import click
-import click
 import importlib
 import pkgutil
 import commands
@@ -9,7 +8,7 @@ from settings import BASE_DIR
 logging.basicConfig(
     filename=BASE_DIR / "munchkin.log",
     level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 
 

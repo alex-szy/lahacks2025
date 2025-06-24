@@ -1,6 +1,5 @@
 import click
 import sys
-import sys
 import subprocess
 import logging
 import tempfile
@@ -16,10 +15,7 @@ def get_user_and_sid():
     try:
         # Run the whoami /user command
         result = subprocess.run(
-            ["whoami", "/user"],
-            capture_output=True,
-            text=True,
-            check=True
+            ["whoami", "/user"], capture_output=True, text=True, check=True
         )
 
         # Output will look like:
@@ -39,7 +35,9 @@ def get_user_and_sid():
         return None, None
 
 
-def generate_task_xml(template_path: Path = TEMPLATE_XML, output_path: Path = BASE_DIR / "temp.xml"):
+def generate_task_xml(
+    template_path: Path = TEMPLATE_XML, output_path: Path = BASE_DIR / "temp.xml"
+):
     full_user, sid = get_user_and_sid()
     python_exe = PYTHON_PATH / "pythonw.exe"
     daemon_py_path = BASE_DIR / "daemon.py"
@@ -49,8 +47,7 @@ def generate_task_xml(template_path: Path = TEMPLATE_XML, output_path: Path = BA
 
     # Substitute placeholders
     xml_content = (
-        xml_content
-        .replace("{{USER}}", full_user)
+        xml_content.replace("{{USER}}", full_user)
         .replace("{{PYTHONW_PATH}}", f'"{python_exe}"')
         .replace("{{DAEMON_PATH}}", f'"{daemon_py_path}"')
         .replace("{{SID}}", sid)
@@ -69,13 +66,10 @@ def install():
     try:
         generate_task_xml(TEMPLATE_XML, tmp_path)
 
-        subprocess.run([
-            "schtasks",
-            "/Create",
-            "/TN", TASK_NAME,
-            "/XML", str(tmp_path),
-            "/F"
-        ], check=True)
+        subprocess.run(
+            ["schtasks", "/Create", "/TN", TASK_NAME, "/XML", str(tmp_path), "/F"],
+            check=True,
+        )
         click.echo("Scheduled task 'MunchkinDaemon' installed.")
     finally:
         if tmp_path.exists():

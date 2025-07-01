@@ -1,31 +1,29 @@
 import requests
-from pathlib import Path
-from settings import GEMINI_API_KEY
+from settings import settings
+
 
 class ModelAPI:
     def __init__(self, model_name: str, temperature: float = 0.0):
         self.model_name = model_name  # e.g., "gemini-2.0-flash"
         self.temperature = temperature
-        self.api_key = GEMINI_API_KEY
+        self.api_key = settings.get_gemini_api_key()
         self.endpoint_base = "https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent"
 
     def call(self, system_prompt: str) -> str:
-        url = self.endpoint_base.format(model_name=self.model_name) + f"?key={self.api_key}"
+        url = (
+            self.endpoint_base.format(model_name=self.model_name)
+            + f"?key={self.api_key}"
+        )
         headers = {
             "Content-Type": "application/json",
         }
         body = {
-            "contents": [
-                {
-                    "role": "user",
-                    "parts": [{"text": system_prompt}]
-                }
-            ],
+            "contents": [{"role": "user", "parts": [{"text": system_prompt}]}],
             "generationConfig": {
                 "temperature": self.temperature,
                 "topK": 40,
-                "topP": 0.95
-            }
+                "topP": 0.95,
+            },
         }
         response = requests.post(url, headers=headers, json=body)
         if response.status_code != 200:

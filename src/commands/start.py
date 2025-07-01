@@ -5,7 +5,7 @@ from settings import BASE_DIR
 
 
 def _start():
-    daemon_path = BASE_DIR / "daemon.py"
+    daemon_path = BASE_DIR / "src" / "daemon.py"
     if sys.platform == "win32":
         subprocess.Popen(
             [sys.executable, daemon_path],

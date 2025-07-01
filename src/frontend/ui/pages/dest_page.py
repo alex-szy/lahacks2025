@@ -1,17 +1,23 @@
 from __future__ import annotations
 from pathlib import Path
-import os
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QFileDialog, QHeaderView,
-    QLabel, QLineEdit, QPushButton, QTableWidget, QTableWidgetItem,
-    QAbstractItemView, QInputDialog
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QFileDialog,
+    QHeaderView,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QTableWidget,
+    QTableWidgetItem,
+    QAbstractItemView,
+    QInputDialog,
 )
 
-from commands import assoc
-from utilities.file_system_config import FileSystemConfig
-# from commands.assoc import load_watch_paths
+from settings import settings
 
 
 class DestinationPage(QWidget):
@@ -99,16 +105,12 @@ class DestinationPage(QWidget):
 
     def _load_existing_destinations(self):
         """Load existing destination folders + descriptions into the table."""
-        cfg = FileSystemConfig()
-        # This returns a dict { folder_path: description }
-        entries = cfg.read_all_entries()
-        for folder_path, description in entries.items():
+        for folder_path in settings.get_folder_paths().keys():
             self._insert_path(folder_path)
 
     def _browse(self):
         """Open a folder picker and prompt for description."""
-        path = QFileDialog.getExistingDirectory(
-            self, "Choose a destination folder")
+        path = QFileDialog.getExistingDirectory(self, "Choose a destination folder")
         if path:
             dialog = QInputDialog(self)
             dialog.setWindowTitle("Folder Description")
@@ -225,5 +227,7 @@ class DestinationPage(QWidget):
 
     def _default_add_callback(self, folder_path: str, description: str):
         """Default backend logic: uses assoc + config."""
-        cfg = FileSystemConfig()
-        cfg.append_entry(os.path.normpath(folder_path), description)
+        folder_path = str(Path(folder_path).resolve())
+        paths = settings.get_folder_paths()
+        paths[folder_path] = description
+        settings.set_folder_paths(paths)

@@ -14,9 +14,15 @@ dependencies = [
     "pyside6>=6.9.1",
     "pystray>=0.19.5",
     "python-docx>=1.2.0",
-    "python-dotenv>=1.1.0",
     "qdrant-client>=1.14.3",
     "requests>=2.32.4",
     "sentence-transformers>=4.1.0",
     "watchdog>=6.0.0",
 ]
+
+[project.scripts]
+mckn = "munchkin:cli"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"

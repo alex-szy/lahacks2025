@@ -1,4 +1,3 @@
-import json
 import logging
 import os
 import signal
@@ -12,7 +11,7 @@ from PIL import Image, ImageDraw
 from watchdog.observers import Observer
 
 from engine.watcher import WatcherHandler
-from settings import ASSETS_DIR, BASE_DIR, WATCH_PATHS_FILE
+from settings import ASSETS_DIR, BASE_DIR, settings
 
 PID_FILE = BASE_DIR / "daemon.pid"
 
@@ -83,15 +82,7 @@ class DaemonService:
 
     def __watch_directories(self):
         logging.info("Starting service")
-        logging.info(f"Watch paths file at: {WATCH_PATHS_FILE}")
-
-        try:
-            with open(WATCH_PATHS_FILE) as f:
-                watch_paths = json.load(f)
-        except Exception as e:
-            logging.error(f"Failed to load watch paths: {e}")
-            return
-
+        watch_paths = settings.get_watch_paths()
         logging.info(f"Watching directories: {watch_paths}")
 
         self.observers = [Observer() for _ in watch_paths]

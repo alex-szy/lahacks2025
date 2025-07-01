@@ -6,12 +6,22 @@ from commands.watch import _add as r_add
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QFileDialog, QHeaderView,
-    QLabel, QLineEdit, QPushButton, QTableWidget, QTableWidgetItem, QAbstractItemView, QInputDialog
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QFileDialog,
+    QHeaderView,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QTableWidget,
+    QTableWidgetItem,
+    QAbstractItemView,
+    QInputDialog,
 )
 
 from commands import watch
-from utilities.file_system_config import FileSystemConfig
+from settings import settings
 
 
 class WatchPage(QWidget):
@@ -46,7 +56,7 @@ class WatchPage(QWidget):
 
         add_btn = QPushButton("Add")
         add_btn.clicked.connect(self._add)
-        
+
         for b in (select_btn, add_btn):
             b.setStyleSheet(
                 """
@@ -92,9 +102,13 @@ class WatchPage(QWidget):
             """
         )
 
-        self.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)  # wider left column
-        self.table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)  # right column stretches too
-        self.table.setColumnWidth(0, int(self.width() * 0.35)) 
+        self.table.horizontalHeader().setSectionResizeMode(
+            0, QHeaderView.Stretch
+        )  # wider left column
+        self.table.horizontalHeader().setSectionResizeMode(
+            1, QHeaderView.Stretch
+        )  # right column stretches too
+        self.table.setColumnWidth(0, int(self.width() * 0.35))
         self.table.verticalHeader().setVisible(False)
         self.table.setSelectionMode(QAbstractItemView.NoSelection)
         root.addWidget(self.table, 1)
@@ -103,10 +117,9 @@ class WatchPage(QWidget):
 
     def _load_existing_paths(self):
         """Load previously watched paths and display them."""
-        paths = watch.load_watch_paths()
-        for path in paths:
+        for path in settings.get_watch_paths():
             self._insert_path(path)
-    
+
     def _browse(self):
         # native Qt folder dialog (non-blocking)
         path = QFileDialog.getExistingDirectory(self, "Choose a folder to watch")
@@ -120,12 +133,12 @@ class WatchPage(QWidget):
             # description, ok = QInputDialog.getText(self, "Enter Description", "Describe this folder:")
             # if ok and description.strip():
             #     self._insert_path(path)
-                # self._add_cb("".join(list(str(path))), description)  # Notify backend (if needed for your app)
-                
-                # --- Save to assoc storage ---
-                # self._add_cb(path)
-                # cfg = FileSystemConfig()
-                # cfg.append_entry(path, description)
+            # self._add_cb("".join(list(str(path))), description)  # Notify backend (if needed for your app)
+
+            # --- Save to assoc storage ---
+            # self._add_cb(path)
+            # cfg = FileSystemConfig()
+            # cfg.append_entry(path, description)
             # else:
             #     print("No description provided. Skipped adding.")
 
@@ -134,7 +147,7 @@ class WatchPage(QWidget):
         if not raw:
             return
         self._insert_path(raw)
-        self._add_cb(Path(raw))      # let backend know
+        self._add_cb(str(Path(raw).resolve()))  # let backend know
         self.path_edit.clear()
 
     def _insert_path(self, p: str):

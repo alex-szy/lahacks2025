@@ -1,7 +1,8 @@
 import os
-from utilities.preprocessor import Preprocessor
-from models.file import File
+
 from engine.encoder import SemanticIndexer
+from models.file import File
+from utilities.preprocessor import Preprocessor
 
 # Initialize everything
 resource_dir = "resources"
@@ -30,10 +31,12 @@ for filename in os.listdir(resource_dir):
         continue
 
     documents.append(text)
-    metadatas.append({
-        'filepath': path,
-        'filename': filename,
-    })
+    metadatas.append(
+        {
+            "filepath": path,
+            "filename": filename,
+        }
+    )
 
 # Step 2: Add documents to indexer
 indexer.add_documents(documents, metadatas)

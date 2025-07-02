@@ -1,14 +1,13 @@
 def build_summarization_prompt(content: str, filename: str) -> str:
-    prompt = (
-        f"{SUMMARIZATION_PROMPT}"
-        f"File Name: {filename}\n"
-        f"File Content: {filename}\n"
-    )
     return f"Summarize the following content briefly:\n\n{content}"
 
-def build_classification_prompt(summary: str, filename: str, folder_paths: list[str], folder_descriptions: list[str]) -> str:
-    
-    folder_info = "\n".join(f"{path}: {desc}" for path, desc in zip(folder_paths, folder_descriptions))
+
+def build_classification_prompt(
+    summary: str, filename: str, folder_paths: list[str], folder_descriptions: list[str]
+) -> str:
+    folder_info = "\n".join(
+        f"{path}: {desc}" for path, desc in zip(folder_paths, folder_descriptions)
+    )
 
     prompt = (
         f"{CLASSIFICATION_PROMPT}"
@@ -18,20 +17,20 @@ def build_classification_prompt(summary: str, filename: str, folder_paths: list[
     )
     return prompt
 
+
 def prepare_folder_info(config) -> tuple[list[str], list[str]]:
     entries = config.read_all_entries()
     folder_paths = list(entries.keys())
     folder_descriptions = [info["description"] for info in entries.values()]
     return folder_paths, folder_descriptions
 
-SUMMARIZATION_PROMPT=\
-"""
+
+SUMMARIZATION_PROMPT = """
 Summarize the following file in 300 words or less.
 
 """
 
-CLASSIFICATION_PROMPT=\
-"""
+CLASSIFICATION_PROMPT = """
 You will be given a file name and a summary of its contents.
 Classify the file into exactly one of the following folders. 
 If no folder matches appropriately, respond with PATH_NOT_FOUND.
@@ -39,8 +38,7 @@ Be quite liberal with the classification. PATH_NOT_FOUND should be used conserva
 
 """
 
-CLASSIFICATION_EXAMPLES_SNIPPET=\
-"""Here are a few Examples:
+CLASSIFICATION_EXAMPLES_SNIPPET = """Here are a few Examples:
 Example 1:
 Input:
 Filename: hw1_linked_lists.pdf

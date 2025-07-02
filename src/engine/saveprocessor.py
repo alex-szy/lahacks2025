@@ -1,18 +1,26 @@
 import os
 import shutil
-import numpy as np
 from typing import Optional
-from engine.encoder import Encoder
+
+import numpy as np
+
+from classifier.classifier import Classifier
 from db.database import VectorDatabase
+from engine.encoder import Encoder
 from models.file import File
 from utilities.preprocessor import Preprocessor
-from classifier.classifier import Classifier
 
 # from dotenv import load_dotenv
 
 
 class SaveProcessor:
-    def __init__(self, encoder: Encoder, classifier: Classifier, db: VectorDatabase, token_threshold: Optional[int] = None) -> None:
+    def __init__(
+        self,
+        encoder: Encoder,
+        classifier: Classifier,
+        db: VectorDatabase,
+        token_threshold: Optional[int] = None,
+    ) -> None:
         self.encoder = encoder
         self.classifier = classifier
         self.db = db
@@ -32,8 +40,7 @@ class SaveProcessor:
             file_path = self._move_file(file.path, target_folder)
 
         # 5. Save embedding + new file path into database
-        self.db.store_embedding_vector(
-            embedding.tolist(), file_path, file.summary)
+        self.db.store_embedding_vector(embedding.tolist(), file_path, file.summary)
 
     def _load_file(self, file_path: str) -> File:
         with open(file_path, "rb") as f:
@@ -47,6 +54,7 @@ class SaveProcessor:
         shutil.move(original_path, new_path)
 
         return new_path
+
 
 # if __name__ == "__main__":
 #     load_dotenv()

@@ -4,8 +4,8 @@ import datetime as _dt
 from pathlib import Path
 from typing import Optional
 
-from PySide6.QtCore import QSize, Qt
-from PySide6.QtWidgets import QLabel, QHBoxLayout, QVBoxLayout, QWidget
+from PySide6.QtCore import QSize
+from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
 from frontend.utils.icons import icon
 from models.file import File  # adjust import path if necessary
@@ -13,8 +13,25 @@ from models.file import File  # adjust import path if necessary
 # Extensions we want to show custom icons for (svg files must exist under
 # your icon theme with the same *key* name).
 SUPPORTED_TEXT_EXTENSIONS = [
-    "txt", "md", "json", "csv", "tsv", "yaml", "yml", "ini", "xml", "html",
-    "py", "java", "js", "cpp", "c", "h", "sh", "pdf", "docx",
+    "txt",
+    "md",
+    "json",
+    "csv",
+    "tsv",
+    "yaml",
+    "yml",
+    "ini",
+    "xml",
+    "html",
+    "py",
+    "java",
+    "js",
+    "cpp",
+    "c",
+    "h",
+    "sh",
+    "pdf",
+    "docx",
 ]
 
 

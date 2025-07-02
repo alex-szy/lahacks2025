@@ -2,7 +2,7 @@ import json
 import logging
 from json import JSONDecodeError
 from pathlib import Path
-from typing import List, Dict
+from typing import Dict, List
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 CONFIG_FILE = BASE_DIR / "config.json"

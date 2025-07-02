@@ -1,5 +1,7 @@
-import click
 from pathlib import Path
+
+import click
+
 from settings import settings
 from utilities.daemon_utils import refresh_if_running
 

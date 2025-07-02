@@ -1,13 +1,32 @@
-from typing import Optional
-from models.file import File
-import fitz  # PyMuPDF for PDF extraction
-from io import BytesIO
-from docx import Document
 import logging
+from io import BytesIO
+from typing import Optional
+
+import fitz  # PyMuPDF for PDF extraction
+from docx import Document
+
+from models.file import File
 
 SUPPORTED_TEXT_EXTENSIONS = [
-    "txt", "md", "json", "csv", "tsv", "yaml", "yml", "ini", "xml", "html",
-    "py", "java", "js", "cpp", "c", "h", "sh", "pdf", "docx"
+    "txt",
+    "md",
+    "json",
+    "csv",
+    "tsv",
+    "yaml",
+    "yml",
+    "ini",
+    "xml",
+    "html",
+    "py",
+    "java",
+    "js",
+    "cpp",
+    "c",
+    "h",
+    "sh",
+    "pdf",
+    "docx",
 ]
 
 
@@ -34,10 +53,11 @@ class Preprocessor:
 
         if ext in SUPPORTED_TEXT_EXTENSIONS:
             try:
-                return file.content.decode('utf-8')
+                return file.content.decode("utf-8")
             except UnicodeDecodeError:
                 logging.error(
-                    f"[Warning] Failed to decode '{file.name}' as UTF-8. Returning empty string.")
+                    f"[Warning] Failed to decode '{file.name}' as UTF-8. Returning empty string."
+                )
                 return ""
 
         raise ValueError(f"Unsupported file extension: {file.extension}")
@@ -49,8 +69,7 @@ class Preprocessor:
             doc.close()
             return text
         except Exception as e:
-            logging.error(
-                f"[Warning] Failed to extract text from PDF: {str(e)}")
+            logging.error(f"[Warning] Failed to extract text from PDF: {str(e)}")
             return ""
 
     def _extract_text_from_docx_bytes(self, content: bytes) -> str:
@@ -59,8 +78,7 @@ class Preprocessor:
             text = "\n".join(para.text for para in doc.paragraphs)
             return text
         except Exception as e:
-            logging.error(
-                f"[Warning] Failed to extract text from DOCX: {str(e)}")
+            logging.error(f"[Warning] Failed to extract text from DOCX: {str(e)}")
             return ""
 
     def _apply_preprocessing(self, content: str) -> str:
@@ -72,4 +90,4 @@ class Preprocessor:
 
     def _truncate_content(self, content: str) -> str:
         # Simple truncation by character count for now
-        return content[:self.token_threshold]
+        return content[: self.token_threshold]

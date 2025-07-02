@@ -1,13 +1,20 @@
-from PySide6.QtCore import Qt, QSize
-from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QLineEdit, QLabel,
-    QListWidget, QListWidgetItem, QFrame
-)
-from frontend.utils.icons import icon
-from frontend.ui.widgets.file_card import FileCard
 from typing import List
-from models.file import File
+
+from PySide6.QtCore import QSize, Qt
+from PySide6.QtWidgets import (
+    QFrame,
+    QLabel,
+    QLineEdit,
+    QListWidget,
+    QListWidgetItem,
+    QVBoxLayout,
+    QWidget,
+)
+
 from commands.find import _find as r_find
+from frontend.ui.widgets.file_card import FileCard
+from frontend.utils.icons import icon
+from models.file import File
 
 
 class HomePage(QWidget):

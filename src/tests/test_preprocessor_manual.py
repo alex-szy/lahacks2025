@@ -1,10 +1,16 @@
 import os
-from utilities.preprocessor import Preprocessor
+
 from models.file import File
+from utilities.preprocessor import Preprocessor
+
 
 def manual_test_preprocessing():
     resource_dir = "resources"
-    files_to_test = [f for f in os.listdir(resource_dir) if os.path.isfile(os.path.join(resource_dir, f))]
+    files_to_test = [
+        f
+        for f in os.listdir(resource_dir)
+        if os.path.isfile(os.path.join(resource_dir, f))
+    ]
 
     preprocessor = Preprocessor(token_threshold=1000)
 
@@ -23,6 +29,7 @@ def manual_test_preprocessing():
         print(processed[:500])  # Print first 500 characters only
         print("\n\n")
         print(f"==== Content of {filename} ====")
+
 
 if __name__ == "__main__":
     manual_test_preprocessing()

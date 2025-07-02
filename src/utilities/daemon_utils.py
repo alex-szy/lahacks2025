@@ -1,6 +1,8 @@
-import requests
-import sys
 import subprocess
+import sys
+
+import requests
+
 from settings import BASE_DIR, settings
 
 

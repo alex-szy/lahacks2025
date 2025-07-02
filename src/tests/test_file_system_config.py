@@ -1,5 +1,7 @@
-from pathlib import Path
-from utilities.file_system_config import FileSystemConfig  # Adjust if needed based on your actual file/module name
+from utilities.file_system_config import (
+    FileSystemConfig,
+)  # Adjust if needed based on your actual file/module name
+
 
 def manual_test():
     cfg = FileSystemConfig()
@@ -19,6 +21,7 @@ def manual_test():
     specific_entry = cfg.read_entry("folder2/fileB.txt")
     print("\nSpecific Entry for 'folder2/fileB.txt':")
     print(specific_entry)
+
 
 if __name__ == "__main__":
     manual_test()

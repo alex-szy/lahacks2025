@@ -1,18 +1,19 @@
 import logging
-from watchdog.observers import Observer
+
 from watchdog.events import FileSystemEventHandler
+
 from settings import MONGO_URI
 
 
 class WatcherHandler(FileSystemEventHandler):
     def __init__(self):
         super().__init__()
-        from db.database import VectorDatabase
-        from engine.saveprocessor import SaveProcessor
-        from engine.encoder import Encoder
         from classifier.classifier import Classifier
+        from db.database import VectorDatabase
+        from engine.encoder import Encoder
+        from engine.saveprocessor import SaveProcessor
 
-        logging.info(f"Importing dependencies for watcher handler finished")
+        logging.info("Importing dependencies for watcher handler finished")
         try:
             self.db = VectorDatabase(MONGO_URI)
             self.saveprocessor = SaveProcessor(

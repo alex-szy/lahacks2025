@@ -9,8 +9,8 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-from PySide6.QtCore import Qt, QSize
-from PySide6.QtGui import QFont, QIcon, QPixmap
+from PySide6.QtCore import QSize, Qt
+from PySide6.QtGui import QFont, QIcon
 from PySide6.QtWidgets import (
     QApplication,
     QFrame,
@@ -20,10 +20,10 @@ from PySide6.QtWidgets import (
     QListWidget,
     QListWidgetItem,
     QMainWindow,
+    QStyle,
     QToolButton,
     QVBoxLayout,
     QWidget,
-    QStyle,
 )
 
 # -----------------------------------------------------------------------------
@@ -103,7 +103,9 @@ class FileCard(QWidget):
         text_col.addWidget(sum_lbl)
         lay.addLayout(text_col, 1)
 
-        meta_lbl = QLabel(f"{path.stat().st_size/1024:.1f} KB · {path.stat().st_mtime:.0f}")
+        meta_lbl = QLabel(
+            f"{path.stat().st_size / 1024:.1f} KB · {path.stat().st_mtime:.0f}"
+        )
         meta_lbl.setStyleSheet("color:#777; font-size:11px;")
         lay.addWidget(meta_lbl)
 
@@ -215,6 +217,7 @@ class MainWindow(QMainWindow):
 # -----------------------------------------------------------------------------
 # Entry point
 # -----------------------------------------------------------------------------
+
 
 def main():
     app = QApplication(sys.argv)

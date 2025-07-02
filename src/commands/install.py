@@ -1,10 +1,12 @@
-import click
-import sys
-import subprocess
 import logging
+import subprocess
+import sys
 import tempfile
 from pathlib import Path
-from settings import BASE_DIR, ASSETS_DIR
+
+import click
+
+from settings import ASSETS_DIR, BASE_DIR
 
 TEMPLATE_XML = ASSETS_DIR / "munchkin_template.xml"
 TASK_NAME = "MunchkinDaemon"

@@ -1,4 +1,5 @@
 import click
+
 from frontend.ui.main_window import main
 
 

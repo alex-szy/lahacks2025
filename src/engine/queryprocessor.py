@@ -1,11 +1,14 @@
 from __future__ import annotations
-import os
-from engine.encoder import Encoder
-from db.database import VectorDatabase
-from models.file import File
+
 import datetime as dt
-from typing import List, Dict, Set
+import os
+from typing import Dict, List, Set
+
 from dotenv import load_dotenv
+
+from db.database import VectorDatabase
+from engine.encoder import Encoder
+from models.file import File
 
 
 class QueryProcessor:
@@ -14,7 +17,9 @@ class QueryProcessor:
         self.db = db
 
     def process_query(self, query: str, return_length: int = 5) -> List[File]:
-        query_vec: List[float] = self.encoder.encode_query(query).tolist()        # now a plain list
+        query_vec: List[float] = self.encoder.encode_query(
+            query
+        ).tolist()  # now a plain list
         raw_rows: List[Dict] = self.db.get_query_results(query_vec)
 
         unique: List[Dict] = []
@@ -26,7 +31,7 @@ class QueryProcessor:
                 continue
             seen.add(fp)
             unique.append(row)
-    
+
         return self._build_files(unique)
 
     def _build_files(self, rows: List[Dict]) -> List[File]:
@@ -46,10 +51,8 @@ class QueryProcessor:
                     path=fp,
                     summary=summary,
                     size_bytes=stat.st_size,
-                    created_at=dt.datetime.fromtimestamp(
-                        stat.st_ctime).isoformat(),
-                    modified_at=dt.datetime.fromtimestamp(
-                        stat.st_mtime).isoformat(),
+                    created_at=dt.datetime.fromtimestamp(stat.st_ctime).isoformat(),
+                    modified_at=dt.datetime.fromtimestamp(stat.st_mtime).isoformat(),
                 )
                 files.append(file_obj)
 

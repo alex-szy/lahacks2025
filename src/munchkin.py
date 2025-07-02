@@ -1,8 +1,10 @@
-import click
 import importlib
-import pkgutil
-import commands
 import logging
+import pkgutil
+
+import click
+
+import commands
 from settings import BASE_DIR
 
 logging.basicConfig(

@@ -1,24 +1,26 @@
 # near the top
 import sys
+from pathlib import Path
 
-from PySide6.QtWidgets import QStackedWidget
-from frontend.ui.pages.home_page import HomePage
-from frontend.ui.pages.watch_page import WatchPage
-from frontend.ui.pages.dest_page import DestinationPage
-from frontend.ui.widgets.nav_button import NavButton
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont
-from pathlib import Path
-from frontend.utils.icons import icon    # new helper name
 from PySide6.QtWidgets import (
+    QApplication,
     QFrame,
     QHBoxLayout,
     QListWidgetItem,
     QMainWindow,
+    QStackedWidget,
     QVBoxLayout,
     QWidget,
-    QApplication,
 )
+
+from frontend.ui.pages.dest_page import DestinationPage
+from frontend.ui.pages.home_page import HomePage
+from frontend.ui.pages.watch_page import WatchPage
+from frontend.ui.widgets.nav_button import NavButton
+from frontend.utils.icons import icon  # new helper name
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -26,7 +28,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Semantic File Explorer")
         self.resize(1050, 660)
         self._build_ui()
-    
+
     def on_search(self, text: str):
         # TODO: backend search integration
         print("Search:", text)
@@ -34,9 +36,9 @@ class MainWindow(QMainWindow):
     def open_item(self, item: QListWidgetItem):
         card = self.results_list.itemWidget(item)
         print("Open", card.path)
-    
+
     def backend_add_watch(self, path: Path):
-        return 
+        return
         print(">> Watch this folder in backend:", path)
         # TODO: plug into your FileSystemConfig / observer logic
 
@@ -56,12 +58,12 @@ class MainWindow(QMainWindow):
         side_lay.setSpacing(10)
 
         btn_info = [
-            ("search",     "Search"),          # ← new home button
-            ("watch",    "Watch Folders"),
-            ("folder",   "Folders"),
-            ("keys",     "API Keys"),
+            ("search", "Search"),  # ← new home button
+            ("watch", "Watch Folders"),
+            ("folder", "Folders"),
+            ("keys", "API Keys"),
             ("settings", "Settings"),
-            ("login",    "Login"),
+            ("login", "Login"),
         ]
         self.nav_btns = []
         for key, tip in btn_info:
@@ -72,22 +74,23 @@ class MainWindow(QMainWindow):
 
         # ---------- Stacked pages --------------------------------------
         self.pages = QStackedWidget()
-        self.home   = HomePage(self.open_item)
-        self.watch  = WatchPage(self.backend_add_watch)  # pass your backend hook
+        self.home = HomePage(self.open_item)
+        self.watch = WatchPage(self.backend_add_watch)  # pass your backend hook
         self.dest = DestinationPage()
-        self.pages.addWidget(self.home)   # index 0
+        self.pages.addWidget(self.home)  # index 0
         self.pages.addWidget(self.watch)  # index 1
-        self.pages.addWidget(self.dest) #index 2
+        self.pages.addWidget(self.dest)  # index 2
         # add more pages later …
 
         root.addWidget(sidebar)
-        root.addWidget(self.pages)        # ← replace “content” with pages
+        root.addWidget(self.pages)  # ← replace “content” with pages
         self.setCentralWidget(central)
 
         # default to Home
         self.nav_btns[0].setChecked(True)
         for i, btn in enumerate(self.nav_btns):
             btn.clicked.connect(lambda _, ix=i: self.pages.setCurrentIndex(ix))
+
 
 def main():
     app = QApplication(sys.argv)

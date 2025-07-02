@@ -1,14 +1,21 @@
-from sentence_transformers import SentenceTransformer
-import numpy as np
-from typing import Optional
 import os
 import sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
-from utilities.preprocessor import Preprocessor
+from typing import Optional
+
+import numpy as np
+from sentence_transformers import SentenceTransformer
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 from models.file import File
+from utilities.preprocessor import Preprocessor
+
 
 class Encoder:
-    def __init__(self, model_name: str = "multi-qa-mpnet-base-dot-v1", token_threshold: Optional[int] = 10000) -> None:
+    def __init__(
+        self,
+        model_name: str = "multi-qa-mpnet-base-dot-v1",
+        token_threshold: Optional[int] = 10000,
+    ) -> None:
         self.model = SentenceTransformer(model_name)
         self.preprocessor = Preprocessor(token_threshold=token_threshold)
 

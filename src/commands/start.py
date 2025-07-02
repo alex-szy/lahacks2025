@@ -1,25 +1,5 @@
 import click
-import sys
-import subprocess
-from settings import BASE_DIR
-
-
-def _start():
-    daemon_path = BASE_DIR / "src" / "daemon.py"
-    if sys.platform == "win32":
-        subprocess.Popen(
-            [sys.executable, daemon_path],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            creationflags=subprocess.CREATE_NO_WINDOW,
-        )
-    else:
-        subprocess.Popen(
-            [sys.executable, daemon_path],
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-            start_new_session=True,
-        )
+from utilities.daemon_utils import start as s
 
 
 @click.command()
@@ -27,5 +7,5 @@ def start():
     """
     Starts the munchkin daemon
     """
-    _start()
+    s()
     click.echo("Starting Munchkin daemon...")

@@ -1,8 +1,7 @@
 import click
 from pathlib import Path
 from settings import settings
-from daemon import service
-from commands.start import _start
+from utilities.daemon_utils import refresh_if_running
 
 
 def is_forbidden(path):
@@ -34,8 +33,7 @@ def _add(folder_path: str):
     paths.append(folder_path)
     settings.set_watch_paths(paths)
     click.echo(f"Added folder '{folder_path}' to watch list.")
-    service.stop()
-    _start()
+    refresh_if_running()
 
 
 def _remove(folder_path: str):
@@ -49,8 +47,7 @@ def _remove(folder_path: str):
     paths.remove(folder_path)
     settings.set_watch_paths(paths)
     click.echo(f"Removed folder '{folder_path}' from watch list.")
-    service.stop()
-    _start()
+    refresh_if_running()
 
 
 def _list_watch():

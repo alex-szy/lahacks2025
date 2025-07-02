@@ -5,6 +5,7 @@ requires-python = ">=3.12"
 dependencies = [
     "click>=8.2.1",
     "faiss-cpu>=1.11.0",
+    "fastapi>=0.115.14",
     "numpy>=2.3.1",
     "olefile>=0.47",
     "pillow>=11.2.1",
@@ -17,6 +18,7 @@ dependencies = [
     "qdrant-client>=1.14.3",
     "requests>=2.32.4",
     "sentence-transformers>=4.1.0",
+    "uvicorn[standard]>=0.35.0",
     "watchdog>=6.0.0",
 ]
 
@@ -26,3 +28,6 @@ mckn = "munchkin:cli"
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
+
+[dependency-groups]
+dev = []

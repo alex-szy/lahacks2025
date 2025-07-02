@@ -1,8 +1,7 @@
 import click
 from pathlib import Path
 from settings import settings
-from daemon import service
-from commands.start import _start
+from utilities.daemon_utils import refresh_if_running
 
 
 @click.group()
@@ -17,8 +16,7 @@ def _add(folder_path: str, description: str):
     paths[folder_path] = description
     settings.set_folder_paths(paths)
     click.echo(f"Sucessfully added: {folder_path}, {description}")
-    service.stop()
-    _start()
+    refresh_if_running()
 
 
 def _remove(folder_path):
@@ -27,8 +25,7 @@ def _remove(folder_path):
     if folder_path in paths:
         del paths[folder_path]
         settings.set_folder_paths(paths)
-        service.stop()
-        _start()
+        refresh_if_running()
 
 
 def _list_assoc():

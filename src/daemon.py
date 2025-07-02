@@ -1,62 +1,34 @@
 import logging
-import os
-import signal
-import sys
 import threading
 import time
+from typing import Dict
 
-import psutil
 import pystray
+import uvicorn
+from fastapi import APIRouter, FastAPI
 from PIL import Image, ImageDraw
 from watchdog.observers import Observer
+from watchdog.observers.api import BaseObserver
 
 from engine.watcher import WatcherHandler
 from settings import ASSETS_DIR, BASE_DIR, settings
 
-PID_FILE = BASE_DIR / "daemon.pid"
-
 
 class DaemonService:
     def __init__(self):
-        self.running = True
-        self.observers = []
+        self.is_dead = threading.Event()
         self.tray_icon = None
-        self.watch_thread = None
+        self.watchers: Dict[str, BaseObserver] = {}
+        self.router = APIRouter()
+        self.router.add_api_route("/shutdown", self.shutdown, methods=["POST"])
+        self.router.add_api_route("/ping", lambda: "mckndaemon", methods=["GET"])
+        self.router.add_api_route("/refresh", self.refresh, methods=["POST"])
+        self.app = FastAPI()
+        self.app.include_router(self.router)
 
-    def __get_pid(self):
-        if PID_FILE.exists():
-            try:
-                with PID_FILE.open("r") as f:
-                    pid = int(f.read().strip())
-                if psutil.pid_exists(pid):
-                    p = psutil.Process(pid)
-                    if "python" in p.name().lower():
-                        # Optionally check cmdline to be 100% sure it's your daemon
-                        cmdline = p.cmdline()
-                        if any("daemon.py" in part for part in cmdline):
-                            return pid
-            except Exception:
-                # If error reading PID, assume stale file
-                pass
-        return None
-
-    def __write_pid_file(self):
-        with PID_FILE.open("w") as f:
-            f.write(str(os.getpid()))
-        logging.info(f"Wrote PID {os.getpid()} to {PID_FILE}")
-
-    def __remove_pid_file(self):
-        try:
-            PID_FILE.unlink()
-            logging.info(f"Removed PID file {PID_FILE}")
-        except FileNotFoundError:
-            pass
-
-    def __signal_handler(self, sig, frame):
-        logging.info(f"Received signal {sig}, shutting down...")
-        self.running = False
-        if self.tray_icon:
-            self.tray_icon.stop()
+    def shutdown(self):
+        logging.info("Shutting down...")
+        self.is_dead.set()
 
     def __create_image(self):
         try:
@@ -69,38 +41,57 @@ class DaemonService:
             dc.ellipse((16, 16, 48, 48), fill=(0, 0, 0))
             return image
 
-    def __on_quit(self, icon, item):
-        logging.info("Tray menu clicked Quit")
-        self.__signal_handler(signal.SIGINT, None)
-
-    def __setup_tray(self):
-        self.tray_icon = pystray.Icon("munchkin")
-        self.tray_icon.icon = self.__create_image()
-        self.tray_icon.title = "Munchkin Daemon"  # <-- this is the hover tooltip!
-        self.tray_icon.menu = pystray.Menu(pystray.MenuItem("Quit", self.__on_quit))
-        self.tray_icon.run()
-
-    def __watch_directories(self):
-        logging.info("Starting service")
+    def __populate_observers(self):
         watch_paths = settings.get_watch_paths()
         logging.info(f"Watching directories: {watch_paths}")
 
-        self.observers = [Observer() for _ in watch_paths]
-        for observer, watch_path in zip(self.observers, watch_paths):
+        for watch_path in watch_paths:
+            observer = Observer()
             event_handler = WatcherHandler()
-            observer.schedule(event_handler, watch_path, recursive=True)
+            observer.schedule(event_handler, watch_path)
             observer.start()
+            self.watchers[watch_path] = observer
 
+    def __clear_observers(self):
+        logging.info("Stopping observers...")
+        for observer in self.watchers.values():
+            observer.stop()
+        for observer in self.watchers.values():
+            observer.join()
+        logging.info("Observers stopped.")
+
+    def refresh(self):
+        self.__clear_observers()
+        self.__populate_observers()
+
+    def __watch_directories(self):
+        """
+        Watcher runs on a separate thread, stopping when shutdown is called
+        """
+        logging.info("Starting service")
+
+        self.__populate_observers()
+        self.is_dead.wait()
+        self.__clear_observers()
+
+    def __start_server(self):
+        """Start the lightweight fastapi server"""
         try:
-            while self.running:
-                time.sleep(1)
-        finally:
-            logging.info("Stopping observers...")
-            for observer in self.observers:
-                observer.stop()
-            for observer in self.observers:
-                observer.join()
-            logging.info("Observers stopped.")
+            uvicorn.run(self.app)
+        except SystemExit as e:
+            if e.code != 0:
+                logging.error(
+                    f"FastAPI server exited with code {e.code}. Usually this means that the port is in use. Try a different port?"
+                )
+                self.shutdown()
+
+    def __check_for_shutdown(self):
+        """Calls tray_icon.stop during shutdown"""
+        self.is_dead.wait()
+        while True:
+            if self.tray_icon:
+                self.tray_icon.stop()
+            time.sleep(1)
 
     def start(self):
         logging.basicConfig(
@@ -108,42 +99,29 @@ class DaemonService:
             level=logging.INFO,
             format="%(asctime)s - %(levelname)s - %(message)s",
         )
-        if self.__get_pid() is not None:
-            logging.error("Another Munchkin daemon is already running. Exiting.")
-            sys.exit(1)
 
-        self.__write_pid_file()
-        # Setup signal handlers
-        signal.signal(signal.SIGINT, self.__signal_handler)
-        signal.signal(signal.SIGTERM, self.__signal_handler)
+        # Start http api thread
+        threading.Thread(target=self.__start_server, daemon=True).start()
 
-        # Start background watcher thread
-        self.watch_thread = threading.Thread(
-            target=self.__watch_directories, daemon=True
+        # Start the background watcher thread
+        watcher_thread = threading.Thread(target=self.__watch_directories)
+        watcher_thread.start()
+
+        # Setup the system tray
+        self.tray_icon = pystray.Icon("munchkin")
+        self.tray_icon.icon = self.__create_image()
+        self.tray_icon.title = "Munchkin Daemon"
+        self.tray_icon.menu = pystray.Menu(
+            pystray.MenuItem("Quit", lambda icon, item: self.shutdown())
         )
-        self.watch_thread.start()
 
-        # Start the system tray (blocking)
-        self.__setup_tray()
+        # Start thread to stop systray on shutdown
+        threading.Thread(target=self.__check_for_shutdown, daemon=True).start()
 
-        # After tray quits, shutdown
-        logging.info("Tray icon closed, exiting service.")
-        self.__remove_pid_file()
-        sys.exit(0)
-
-    def stop(self):
-        if (pid := self.__get_pid()) is not None:
-            if sys.platform == "win32":
-                os.kill(pid, signal.SIGTERM)
-            else:
-                os.kill(pid, signal.SIGINT)
-            self.__remove_pid_file()
-            return True
-        return False
+        # Start the system tray
+        self.tray_icon.run()
+        watcher_thread.join()
 
 
-service = DaemonService()
-
-# --- Entry Point ---
 if __name__ == "__main__":
-    service.start()
+    DaemonService().start()

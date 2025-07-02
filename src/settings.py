@@ -48,6 +48,13 @@ class Settings(object, metaclass=Singleton):
         self.__config["folder_paths"] = paths
         self.__push()
 
+    def get_daemon_port(self):
+        self.__pull()
+        return self.__config.get("daemon_port", 8000)
+
+    def set_daemon_port(self, port: int):
+        self.__config["daemon_port"] = port
+
     def __push(self):
         with open(CONFIG_FILE, "w") as f:
             json.dump(self.__config, f, indent=4)

@@ -4,12 +4,12 @@ from typing import List
 
 import click
 
-from models.file import File
+from engine.database import File
 from settings import MONGO_URI
 
 
 def _find(query: str) -> List[File]:
-    from db.database import VectorDatabase
+    from engine.database import VectorDatabase
     from engine.encoder import Encoder
     from engine.queryprocessor import QueryProcessor
 

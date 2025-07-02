@@ -8,8 +8,8 @@ from settings import MONGO_URI
 class WatcherHandler(FileSystemEventHandler):
     def __init__(self):
         super().__init__()
-        from classifier.classifier import Classifier
-        from db.database import VectorDatabase
+        from engine.classifier import Classifier
+        from engine.database import VectorDatabase
         from engine.encoder import Encoder
         from engine.saveprocessor import SaveProcessor
 

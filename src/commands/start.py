@@ -1,6 +1,6 @@
 import click
 
-from utilities.daemon_utils import start as s
+from daemon_clerk import start as s
 
 
 @click.command()

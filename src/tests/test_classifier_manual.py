@@ -1,7 +1,7 @@
 import os
 
 from classifier.classifier import Classifier
-from models.file import File
+from engine.database import File
 from utilities.file_system_config import FileSystemConfig
 
 

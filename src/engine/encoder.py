@@ -6,8 +6,8 @@ import numpy as np
 from sentence_transformers import SentenceTransformer
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
-from models.file import File
-from utilities.preprocessor import Preprocessor
+from engine.database import File
+from engine.preprocessor import Preprocessor
 
 
 class Encoder:

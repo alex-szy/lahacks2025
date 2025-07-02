@@ -5,7 +5,7 @@ from typing import Optional
 import fitz  # PyMuPDF for PDF extraction
 from docx import Document
 
-from models.file import File
+from engine.database import File
 
 SUPPORTED_TEXT_EXTENSIONS = [
     "txt",

@@ -2,15 +2,15 @@ import logging
 from pathlib import Path
 from typing import Optional
 
-from classifier.model_api import ModelAPI
-from classifier.prompt_builder import (
+from engine.model_api import ModelAPI
+from engine.prompt_builder import (
     build_classification_prompt,
     build_summarization_prompt,
     prepare_folder_info,
 )
-from models.file import File
+from engine.database import File
 from settings import settings
-from utilities.preprocessor import Preprocessor
+from engine.preprocessor import Preprocessor
 
 
 class Classifier:

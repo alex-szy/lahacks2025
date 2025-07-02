@@ -4,11 +4,11 @@ from typing import Optional
 
 import numpy as np
 
-from classifier.classifier import Classifier
-from db.database import VectorDatabase
+from engine.classifier import Classifier
+from engine.database import VectorDatabase
 from engine.encoder import Encoder
-from models.file import File
-from utilities.preprocessor import Preprocessor
+from engine.database import File
+from engine.preprocessor import Preprocessor
 
 # from dotenv import load_dotenv
 

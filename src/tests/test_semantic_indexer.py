@@ -1,8 +1,8 @@
 import os
 
 from engine.encoder import SemanticIndexer
-from models.file import File
-from utilities.preprocessor import Preprocessor
+from engine.database import File
+from engine.preprocessor import Preprocessor
 
 # Initialize everything
 resource_dir = "resources"

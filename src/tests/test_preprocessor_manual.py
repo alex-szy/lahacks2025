@@ -1,7 +1,7 @@
 import os
 
-from models.file import File
-from utilities.preprocessor import Preprocessor
+from engine.database import File
+from engine.preprocessor import Preprocessor
 
 
 def manual_test_preprocessing():

@@ -14,7 +14,7 @@ from PySide6.QtWidgets import (
 from commands.find import _find as r_find
 from frontend.ui.widgets.file_card import FileCard
 from frontend.utils.icons import icon
-from models.file import File
+from engine.database import File
 
 
 class HomePage(QWidget):

@@ -6,9 +6,9 @@ from typing import Dict, List, Set
 
 from dotenv import load_dotenv
 
-from db.database import VectorDatabase
+from engine.database import VectorDatabase
 from engine.encoder import Encoder
-from models.file import File
+from engine.database import File
 
 
 class QueryProcessor:

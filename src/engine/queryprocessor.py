@@ -24,6 +24,9 @@ class QueryProcessor:
                 continue
             try:
                 stat = path.stat()
+                if not path.is_file():
+                    cleanup.append(id)
+                    continue
                 file.size_bytes = stat.st_size
                 file.created_at = dt.datetime.fromtimestamp(stat.st_ctime).isoformat()
                 file.modified_at = dt.datetime.fromtimestamp(stat.st_mtime).isoformat()
@@ -32,6 +35,7 @@ class QueryProcessor:
             except (FileNotFoundError, PermissionError, OSError):
                 cleanup.append(id)
 
-        self.db.remove_entries(cleanup)
+        if cleanup:
+            self.db.remove_entries(cleanup)
 
         return res

@@ -1,3 +1,4 @@
+import logging
 
 from PySide6.QtCore import QSize, Qt
 from PySide6.QtWidgets import (
@@ -79,18 +80,15 @@ class HomePage(QWidget):
             self._show_no_results()
             return
 
-        try:
-            matches = r_find(query)
-        except Exception as exc:  # defensive: don’t crash the UI
-            print(f"search error: {exc}")
-            matches = None
+        matches, err = r_find(query)
+        if err:
+            logging.error(f"search error: {err}")
 
-        self._render_results(matches or [])
+        self._render_results(matches)
 
     def _render_results(self, files):
         """Populate the QListWidget with FileCard widgets."""
         self.results.clear()
-        files = list(files or [])
         if not files:
             self._show_no_results()
             return

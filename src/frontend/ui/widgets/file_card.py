@@ -46,7 +46,7 @@ class FileCard(QWidget):
 
     _DATE_FMT = "%b %d %Y"  # e.g. "Apr 27 2025"
 
-    def __init__(self, file: File):
+    def __init__(self, file: dict[str, str]):
         super().__init__()
         self.setStyleSheet("background:transparent;")  # allow list‑item highlight
 
@@ -55,7 +55,7 @@ class FileCard(QWidget):
         layout.setSpacing(14)
 
         # ── File icon ───────────────────────────────────────────────────────
-        ext = (getattr(file, "extension", "") or "").lstrip(".").lower()
+        ext = file.get("extension", "").lstrip(".").lower()
         icon_key = ext if ext in SUPPORTED_TEXT_EXTENSIONS else "file"
         icon_lbl = QLabel()
         qicon = icon(icon_key, 28).pixmap(QSize(28, 28))
@@ -65,7 +65,7 @@ class FileCard(QWidget):
         # ── Text column (name + summary) ─────────────────────────────────────
         text_col = QVBoxLayout()
 
-        name_lbl = QLabel(getattr(file, "name", "Unnamed file"))
+        name_lbl = QLabel(file.get("name", "Unnamed file"))
         name_lbl.setStyleSheet(
             """
             color: #222;
@@ -75,7 +75,7 @@ class FileCard(QWidget):
             """
         )
 
-        summary_lbl = QLabel(getattr(file, "summary", "No summary available."))
+        summary_lbl = QLabel(file.get("summary", "No summary available."))
         summary_lbl.setWordWrap(True)
         summary_lbl.setStyleSheet(
             """
@@ -103,9 +103,9 @@ class FileCard(QWidget):
             layout.addWidget(meta_lbl)
 
     # ── Helper methods ──────────────────────────────────────────────────────
-    def _build_meta_string(self, file: File) -> str:
+    def _build_meta_string(self, file: dict[str, str]) -> str:
         """Safely build the *size • modified* string."""
-        size_kb = self._resolve_size(file)
+        size_kb = int(file.get("size_bytes", 0)) / 1024
         mtime = self._resolve_mtime(file)
         parts: list[str] = []
         if size_kb is not None:
@@ -114,28 +114,9 @@ class FileCard(QWidget):
             parts.append(mtime)
         return " · ".join(parts)
 
-    @staticmethod
-    def _resolve_size(file: File) -> Optional[float]:
-        """Return file size in kilobytes if determinable."""
-        # Attribute may not exist – use getattr defensively
-        size_bytes = getattr(file, "size_bytes", None)
-        if size_bytes is not None:
-            return size_bytes / 1024
-        path_str = getattr(file, "path", None)
-        if path_str:
-            try:
-                return Path(path_str).stat().st_size / 1024
-            except (FileNotFoundError, OSError):
-                pass
-        # Fallback to content length if provided
-        content = getattr(file, "content", None)
-        if content:
-            return len(content) / 1024
-        return None
-
-    def _resolve_mtime(self, file: File) -> Optional[str]:
+    def _resolve_mtime(self, file: dict[str, str]) -> Optional[str]:
         """Return modified‑time string or *None* if unavailable."""
-        mtime_raw = getattr(file, "modified_at", None)
+        mtime_raw = file.get("modified_at", None)
         if mtime_raw:
             # Try ISO-8601 first; fallback to raw string
             try:
@@ -143,7 +124,7 @@ class FileCard(QWidget):
                 return ts.strftime(self._DATE_FMT)
             except ValueError:
                 return str(mtime_raw)
-        path_str = getattr(file, "path", None)
+        path_str = file.get("path", None)
         if path_str:
             try:
                 ts = _dt.datetime.fromtimestamp(Path(path_str).stat().st_mtime)

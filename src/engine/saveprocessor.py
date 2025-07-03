@@ -1,4 +1,5 @@
 from typing import Optional
+from pathlib import Path
 
 from engine.classifier import Classifier, Summarizer
 from engine.db.database import VectorDatabase
@@ -24,9 +25,14 @@ class SaveProcessor:
         # Summarize its content
         summary = self.summarizer.summarize(contents)
 
+        # Classify the file
+        new_path = self.classifier.classify(file.basename, summary)
+        if new_path:
+            file.path = str(Path(new_path) / file.basename)
+
         # Save embedding + new file path into database
         self.db.create_entry(file, summary)
 
         # Classify file to determine target folder
         # TODO: run in parallel with storing the embedding, possibly using multiprocessing
-        return self.classifier.classify(file.basename, summary)
+        return new_path

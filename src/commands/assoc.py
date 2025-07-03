@@ -3,7 +3,6 @@ from pathlib import Path
 import click
 
 from settings import settings
-from daemon_clerk import refresh_if_running
 from utils import is_forbidden
 
 
@@ -21,7 +20,6 @@ def _add(folder_path: str, description: str):
     paths[folder_path] = description
     settings.set_folder_paths(paths)
     click.echo(f"Sucessfully added: {folder_path}, {description}")
-    refresh_if_running()
 
 
 def _remove(folder_path: str):
@@ -30,7 +28,6 @@ def _remove(folder_path: str):
     if folder_path in paths:
         del paths[folder_path]
         settings.set_folder_paths(paths)
-        refresh_if_running()
 
 
 def _list_assoc():

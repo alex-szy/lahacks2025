@@ -50,4 +50,4 @@ class File:
         self.basename = basename
         self.path = abs_path
         ext = Path(basename).suffix
-        self.extension = ext.lstrip() if ext else None
+        self.extension = ext.lstrip(".") if ext else None

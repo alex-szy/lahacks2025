@@ -14,7 +14,6 @@ from PySide6.QtWidgets import (
 from commands.find import _find as r_find
 from frontend.ui.widgets.file_card import FileCard
 from frontend.utils.icons import icon
-from engine.database import File
 
 
 class HomePage(QWidget):
@@ -82,14 +81,14 @@ class HomePage(QWidget):
             return
 
         try:
-            matches: list[File] | None = r_find(query)
+            matches = r_find(query)
         except Exception as exc:  # defensive: don’t crash the UI
             print(f"search error: {exc}")
             matches = None
 
         self._render_results(matches or [])
 
-    def _render_results(self, files: List[File]):
+    def _render_results(self, files):
         """Populate the QListWidget with FileCard widgets."""
         self.results.clear()
         files = list(files or [])

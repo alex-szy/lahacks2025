@@ -1,23 +1,18 @@
 import os
 
-from classifier.classifier import Classifier
-from engine.database import File
-from utilities.file_system_config import FileSystemConfig
+from engine.classifier import Classifier
+from engine.db.models import File
+from settings import settings
 
 
 def manual_test_classifier():
     # Setup: Add three folder paths
-    config = FileSystemConfig()
-    config.append_entry(
-        "/machine_learning",
-        "Content related to machine learning topics, research, and implementations.",
-    )
-    config.append_entry(
-        "/hobbies/cooking", "Recipes, cooking notes, and culinary experiments."
-    )
-    config.append_entry(
-        "/history/europe",
-        "Documents related to world history, civilizations, and historical events.",
+    settings.set_folder_paths(
+        {
+            "/machine_learning": "Content related to machine learning topics, research, and implementations.",
+            "/hobbies/cooking": "Recipes, cooking notes, and culinary experiments.",
+            "/history/europe": "Documents related to world history, civilizations, and historical events.",
+        }
     )
 
     # Initialize Classifier

@@ -1,6 +1,6 @@
 import os
 
-from engine.database import File
+from engine.db.models import File
 from engine.preprocessor import Preprocessor
 
 

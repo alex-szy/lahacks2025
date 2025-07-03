@@ -8,7 +8,7 @@ from PySide6.QtCore import QSize
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
 from frontend.utils.icons import icon
-from engine.database import File  # adjust import path if necessary
+from engine.db.models import File  # adjust import path if necessary
 
 # Extensions we want to show custom icons for (svg files must exist under
 # your icon theme with the same *key* name).

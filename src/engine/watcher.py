@@ -17,10 +17,10 @@ class WatcherHandler(FileSystemEventHandler):
         self.handle_event(event)
 
     def handle_event(self, event):
-        if event.is_directory:
-            return
         try:
             file_path = Path(event.src_path).resolve()
+            if not file_path.is_file():
+                return
             logging.info(f"Handle file: {file_path}")
 
             # Create the file object

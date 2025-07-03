@@ -63,7 +63,7 @@ class Settings(object, metaclass=Singleton):
             with open(CONFIG_FILE, "r") as f:
                 self.__config = json.load(f)
         except (FileNotFoundError, JSONDecodeError) as e:
-            logging.error(f"Error loading config file at {CONFIG_FILE}: {e}")
+            # logging.error(f"Error loading config file at {CONFIG_FILE}: {e}")
             self.__config = {}
 
 

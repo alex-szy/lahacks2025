@@ -4,12 +4,7 @@ import click
 
 from settings import settings
 from daemon_clerk import refresh_if_running
-
-
-def is_forbidden(path):
-    """Placeholder for forbidden paths logic."""
-    # You can define your own forbidden logic here.
-    return False
+from utils import is_forbidden
 
 
 @click.group()
@@ -22,10 +17,7 @@ def _add(folder_path: str):
     folder_path = str(Path(folder_path).resolve())
 
     if is_forbidden(folder_path):
-        click.echo(
-            f"Error: The folder '{folder_path}' is forbidden and cannot be added."
-        )
-        return
+        raise click.BadParameter("Access is denied", param_hint="FOLDER_PATH")
 
     paths = settings.get_watch_paths()
     if folder_path in paths:

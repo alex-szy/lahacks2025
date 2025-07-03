@@ -7,7 +7,6 @@ from typing import Dict, List
 BASE_DIR = Path(__file__).resolve().parent.parent
 CONFIG_FILE = BASE_DIR / "config.json"
 ASSETS_DIR = BASE_DIR / "assets"
-MONGO_URI = None
 
 
 class Singleton(type):

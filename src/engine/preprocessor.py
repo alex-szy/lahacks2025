@@ -5,7 +5,7 @@ from typing import Optional
 import fitz  # PyMuPDF for PDF extraction
 from docx import Document
 
-from engine.database import File
+from engine.watcher import File
 
 SUPPORTED_TEXT_EXTENSIONS = [
     "txt",
@@ -56,7 +56,7 @@ class Preprocessor:
                 return file.content.decode("utf-8")
             except UnicodeDecodeError:
                 logging.error(
-                    f"[Warning] Failed to decode '{file.name}' as UTF-8. Returning empty string."
+                    f"[Warning] Failed to decode '{file.basename}' as UTF-8. Returning empty string."
                 )
                 return ""
 

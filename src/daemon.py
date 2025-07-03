@@ -1,7 +1,6 @@
 import logging
 import threading
 import time
-from typing import Dict
 
 import pystray
 import uvicorn
@@ -11,6 +10,9 @@ from watchdog.observers import Observer
 from watchdog.observers.api import BaseObserver
 
 from engine.watcher import WatcherHandler
+from engine.db.database import VectorDatabase
+from engine.saveprocessor import SaveProcessor
+from engine.queryprocessor import QueryProcessor
 from settings import ASSETS_DIR, BASE_DIR, settings
 
 
@@ -18,17 +20,30 @@ class DaemonService:
     def __init__(self):
         self.is_dead = threading.Event()
         self.tray_icon = None
-        self.watchers: Dict[str, BaseObserver] = {}
+        self.watchers: dict[str, BaseObserver] = {}
         self.router = APIRouter()
         self.router.add_api_route("/shutdown", self.shutdown, methods=["POST"])
         self.router.add_api_route("/ping", lambda: "mckndaemon", methods=["GET"])
         self.router.add_api_route("/refresh", self.refresh, methods=["POST"])
+        self.router.add_api_route("/query", self.query)
         self.app = FastAPI()
         self.app.include_router(self.router)
+        db = VectorDatabase()
+        self.saveprocessor = SaveProcessor(db)
+        self.queryprocessor = QueryProcessor(db)
+
+    # API Routes
 
     def shutdown(self):
         logging.info("Shutting down...")
         self.is_dead.set()
+
+    def refresh(self):
+        self.__clear_observers()
+        self.__populate_observers()
+
+    def query(self, query: str, return_length: int = 5):
+        return self.queryprocessor.process_query(query, return_length)
 
     def __create_image(self):
         try:
@@ -47,7 +62,7 @@ class DaemonService:
 
         for watch_path in watch_paths:
             observer = Observer()
-            event_handler = WatcherHandler()
+            event_handler = WatcherHandler(self.saveprocessor)
             observer.schedule(event_handler, watch_path)
             observer.start()
             self.watchers[watch_path] = observer
@@ -59,10 +74,6 @@ class DaemonService:
         for observer in self.watchers.values():
             observer.join()
         logging.info("Observers stopped.")
-
-    def refresh(self):
-        self.__clear_observers()
-        self.__populate_observers()
 
     def __watch_directories(self):
         """

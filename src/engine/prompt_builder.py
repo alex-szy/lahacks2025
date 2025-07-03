@@ -1,13 +1,11 @@
-def build_summarization_prompt(content: str, filename: str) -> str:
+def build_summarization_prompt(content: str):
     return f"Summarize the following content briefly:\n\n{content}"
 
 
 def build_classification_prompt(
-    summary: str, filename: str, folder_paths: list[str], folder_descriptions: list[str]
+    summary: str, filename: str, folder_paths: dict[str, str]
 ) -> str:
-    folder_info = "\n".join(
-        f"{path}: {desc}" for path, desc in zip(folder_paths, folder_descriptions)
-    )
+    folder_info = "\n".join(f"{path}: {desc}" for path, desc in folder_paths.items())
 
     prompt = (
         f"{CLASSIFICATION_PROMPT}"
@@ -16,13 +14,6 @@ def build_classification_prompt(
         f"Input:\nFilename: {filename}\nSummary: {summary}\nOutput:"
     )
     return prompt
-
-
-def prepare_folder_info(config) -> tuple[list[str], list[str]]:
-    entries = config.read_all_entries()
-    folder_paths = list(entries.keys())
-    folder_descriptions = [info["description"] for info in entries.values()]
-    return folder_paths, folder_descriptions
 
 
 SUMMARIZATION_PROMPT = """

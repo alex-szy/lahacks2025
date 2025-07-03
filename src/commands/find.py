@@ -1,25 +1,20 @@
-import contextlib
-import os
 from typing import List
+import requests
 
 import click
 
-from engine.database import File
-from settings import MONGO_URI
+from engine.db.models import File
+from settings import settings
 
 
 def _find(query: str) -> List[File]:
-    from engine.database import VectorDatabase
-    from engine.encoder import Encoder
-    from engine.queryprocessor import QueryProcessor
-
-    db = VectorDatabase(MONGO_URI)
-    qp = QueryProcessor(Encoder(), db=db)
-
-    with contextlib.redirect_stderr(open(os.devnull, "w")):
-        res = qp.process_query(query)
-
-    return res
+    try:
+        res = requests.get(
+            f"http://localhost:{settings.get_daemon_port()}/query", {query: query}
+        )
+        return res.json()
+    except requests.ConnectionError:
+        return []
 
 
 @click.command()

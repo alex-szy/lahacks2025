@@ -1,5 +1,4 @@
 import json
-import logging
 from json import JSONDecodeError
 from pathlib import Path
 from typing import Dict, List
@@ -62,8 +61,7 @@ class Settings(object, metaclass=Singleton):
         try:
             with open(CONFIG_FILE, "r") as f:
                 self.__config = json.load(f)
-        except (FileNotFoundError, JSONDecodeError) as e:
-            # logging.error(f"Error loading config file at {CONFIG_FILE}: {e}")
+        except (FileNotFoundError, JSONDecodeError):
             self.__config = {}
 
 

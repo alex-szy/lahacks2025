@@ -9,10 +9,10 @@ from PIL import Image, ImageDraw
 from watchdog.observers import Observer
 from watchdog.observers.api import BaseObserver
 
-from engine.watcher import WatcherHandler
 from engine.db.database import VectorDatabase
-from engine.saveprocessor import SaveProcessor
 from engine.queryprocessor import QueryProcessor
+from engine.saveprocessor import SaveProcessor
+from engine.watcher import WatcherHandler
 from settings import ASSETS_DIR, BASE_DIR, settings
 
 

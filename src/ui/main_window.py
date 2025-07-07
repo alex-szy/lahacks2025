@@ -1,6 +1,5 @@
 # near the top
 import sys
-from pathlib import Path
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
@@ -16,8 +15,8 @@ from PySide6.QtWidgets import (
 from ui.pages.dest_page import DestinationPage
 from ui.pages.home_page import HomePage
 from ui.pages.watch_page import WatchPage
-from ui.widgets.nav_button import NavButton
 from ui.utils.icons import icon  # new helper name
+from ui.widgets.nav_button import NavButton
 
 
 class MainWindow(QMainWindow):

@@ -14,8 +14,8 @@ from PySide6.QtWidgets import (
 )
 
 from api.find import find
-from ui.widgets.file_card import FileCard
 from ui.utils.icons import icon
+from ui.widgets.file_card import FileCard
 
 
 class HomePage(QWidget):

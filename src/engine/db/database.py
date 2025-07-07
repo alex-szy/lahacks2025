@@ -5,8 +5,8 @@ import chromadb
 import chromadb.api
 import chromadb.api.types
 
-from engine.watcher import File
 import engine.db.models as models
+from engine.watcher import File
 
 DISTANCE_THRESHOLD = 1.7
 

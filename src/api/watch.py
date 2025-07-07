@@ -1,7 +1,8 @@
-from api.daemon import refresh_if_running
-from utils import is_forbidden
 from pathlib import Path
+
+from api.daemon import refresh_if_running
 from settings import settings
+from utils import is_forbidden
 
 
 def add(folder_path: str):

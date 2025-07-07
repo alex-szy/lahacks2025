@@ -5,19 +5,18 @@ from pathlib import Path
 from PySide6.QtWidgets import (
     QAbstractItemView,
     QFileDialog,
+    QFrame,
     QHBoxLayout,
     QHeaderView,
     QLabel,
     QLineEdit,
+    QMessageBox,
     QPushButton,
     QTableWidget,
     QTableWidgetItem,
     QVBoxLayout,
     QWidget,
-    QMessageBox,
-    QFrame,
 )
-from PySide6.QtCore import Qt
 
 from api import watch
 

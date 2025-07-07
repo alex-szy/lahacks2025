@@ -3,12 +3,10 @@ import sys
 from pathlib import Path
 
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QFont
 from PySide6.QtWidgets import (
     QApplication,
     QFrame,
     QHBoxLayout,
-    QListWidgetItem,
     QMainWindow,
     QStackedWidget,
     QVBoxLayout,
@@ -29,36 +27,25 @@ class MainWindow(QMainWindow):
         self.resize(1050, 660)
         self._build_ui()
 
-    def on_search(self, text: str):
-        # TODO: backend search integration
-        print("Search:", text)
-
-    def backend_add_watch(self, path: Path):
-        return
-        print(">> Watch this folder in backend:", path)
-        # TODO: plug into your FileSystemConfig / observer logic
-
     def _build_ui(self):
         central = QWidget()
-        central.setStyleSheet("background: #ffffff;")
         root = QHBoxLayout(central)
         root.setContentsMargins(0, 0, 0, 0)
 
         # ---------- Sidebar --------------------------------------------
         sidebar = QFrame()
         sidebar.setFixedWidth(72)
-        sidebar.setStyleSheet("background:#ffffff; border-right:1px solid #ffffff;")
         side_lay = QVBoxLayout(sidebar)
         side_lay.setAlignment(Qt.AlignmentFlag.AlignTop)
         side_lay.setContentsMargins(12, 16, 12, 16)
         side_lay.setSpacing(10)
 
         btn_info = [
-            ("search", "Search"),  # ← new home button
+            ("search", "Search"),
             ("watch", "Watch Folders"),
-            ("folder", "Folders")
+            ("folder", "Destination Folders"),
         ]
-        self.nav_btns = []
+        self.nav_btns: list[NavButton] = []
         for key, tip in btn_info:
             b = NavButton(icon(key), tip)
             side_lay.addWidget(b)
@@ -68,7 +55,7 @@ class MainWindow(QMainWindow):
         # ---------- Stacked pages --------------------------------------
         self.pages = QStackedWidget()
         self.home = HomePage()
-        self.watch = WatchPage(self.backend_add_watch)  # pass your backend hook
+        self.watch = WatchPage()
         self.dest = DestinationPage()
         self.pages.addWidget(self.home)  # index 0
         self.pages.addWidget(self.watch)  # index 1
@@ -84,12 +71,26 @@ class MainWindow(QMainWindow):
         for i, btn in enumerate(self.nav_btns):
             btn.clicked.connect(lambda _, ix=i: self.pages.setCurrentIndex(ix))
 
+        self.pages.currentChanged.connect(self.on_page_change)
+
+    def on_page_change(self, index):
+        widget = self.pages.widget(index)
+        widget.update()
+
 
 def main():
     app = QApplication(sys.argv)
-    app.setFont(QFont("Helvetica Neue", 10))
-    app.setStyle("Fusion")
     win = MainWindow()
+    win.setStyleSheet(
+        """
+        font: "Helvetica Neue";
+        font-size: 10px;
+        color: #000000;
+        background: #ffffff;
+        border: none;
+        border-radius: 6px;
+        """
+    )
     win.show()
     sys.exit(app.exec())
 

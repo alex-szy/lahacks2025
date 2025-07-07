@@ -16,10 +16,9 @@ ICON_MAP = {
     "settings": HERE / "icons/settings.svg",
     "login": HERE / "icons/user.svg",
     "search": HERE / "icons/search.svg",
-    "file": HERE / "icons/file.svg",
-    "pdf": HERE / "icons/pdf.svg",
-    "txt": HERE / "icons/txt.svg",
-    "csv": HERE / "icons/csv.svg",
+    ".pdf": HERE / "icons/pdf.svg",
+    ".txt": HERE / "icons/txt.svg",
+    ".csv": HERE / "icons/csv.svg",
 }
 
 
@@ -28,4 +27,4 @@ def icon(name: str, size: int = 200) -> QIcon:
     if path and path.exists():
         return QIcon(str(path))
     # graceful fallback to built‑in if custom SVG missing
-    return QApplication.style().standardIcon(getattr(QStyle, "SP_FileIcon", 0))
+    return QApplication.style().standardIcon(QStyle.StandardPixmap.SP_FileIcon)

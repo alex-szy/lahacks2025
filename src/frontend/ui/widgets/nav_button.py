@@ -15,7 +15,7 @@ class NavButton(QToolButton):
         self.setIcon(icon)
         self.setIconSize(QSize(22, 22))
         self.setToolTip(tooltip)
-        self.setCursor(Qt.PointingHandCursor)
+        self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.setCheckable(True)
         self.setAutoExclusive(True)
         self.setStyleSheet(

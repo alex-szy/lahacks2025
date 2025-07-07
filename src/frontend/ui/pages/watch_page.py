@@ -27,7 +27,6 @@ class WatchPage(QWidget):
         super().__init__()
         # self._add_cb = add_callback
         self._add_cb = watch._add
-        self.setStyleSheet('font-family:"Poppins",sans-serif;')
 
         root = QVBoxLayout(self)
         root.setContentsMargins(32, 24, 32, 24)
@@ -43,7 +42,7 @@ class WatchPage(QWidget):
         self.path_edit.setMinimumWidth(350)
         self.path_edit.setStyleSheet(
             "border:1px solid #d4d4d4; border-radius:6px; padding:6px 8px;"
-            'font-family:"Poppins",sans-serif; font-size:13px;color:#000000;'
+            'font-size:13px;color:#000000;'
         )
         row.addWidget(self.path_edit, 1)
 
@@ -62,7 +61,6 @@ class WatchPage(QWidget):
                     border:1px solid #d4d4d4;
                     border-radius:6px;
                     padding:6px 18px;
-                    font-family:"Poppins",sans-serif;
                     font-size:13px;
                 }
                 QPushButton:hover { background:#f7f7f7; }
@@ -84,7 +82,6 @@ class WatchPage(QWidget):
                 border:1px solid #d4d4d4;
                 border-radius:10px;
                 gridline-color:#ececec;
-                font-family:"Poppins",sans-serif;
                 font-size:14px;
                 color:#000000;                 /* ← pure black text */
             }
@@ -99,14 +96,14 @@ class WatchPage(QWidget):
         )
 
         self.table.horizontalHeader().setSectionResizeMode(
-            0, QHeaderView.Stretch
+            0, QHeaderView.ResizeMode.Stretch
         )  # wider left column
         self.table.horizontalHeader().setSectionResizeMode(
-            1, QHeaderView.Stretch
+            1, QHeaderView.ResizeMode.Stretch
         )  # right column stretches too
         self.table.setColumnWidth(0, int(self.width() * 0.35))
         self.table.verticalHeader().setVisible(False)
-        self.table.setSelectionMode(QAbstractItemView.NoSelection)
+        self.table.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
         root.addWidget(self.table, 1)
 
         self._load_existing_paths()

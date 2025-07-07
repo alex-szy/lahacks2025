@@ -49,5 +49,4 @@ class File:
         self.content = bytes
         self.basename = basename
         self.path = abs_path
-        ext = Path(basename).suffix
-        self.extension = ext.lstrip(".") if ext else None
+        self.extension = Path(basename).suffix

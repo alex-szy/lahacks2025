@@ -2,7 +2,6 @@ import logging
 
 from PySide6.QtCore import QSize, Qt
 from PySide6.QtWidgets import (
-    QFrame,
     QLabel,
     QLineEdit,
     QListWidget,
@@ -30,7 +29,7 @@ class HomePage(QWidget):
         Called when a user clicks a file card in the list.
     """
 
-    def __init__(self, on_open):
+    def __init__(self):
         super().__init__()
 
         # ── Layout ────────────────────────────────────────────────────────────
@@ -45,10 +44,10 @@ class HomePage(QWidget):
             """
             QLineEdit {
                 background:#ffffff; color:#222;
-                font-family:"Poppins",sans-serif; font-size:14px;
-                border:1px solid #d4d4d4; border-radius:23px; padding-left:48px;
+                font-size:14px;
+                border:2px solid #d4d4d4; border-radius:23px; padding-left:48px;
             }
-            QLineEdit:focus { border-color:#7a74ff; }
+            QLineEdit:focus { border-color:#000000; }
             QLineEdit::placeholder { color:#999; }
             """
         )
@@ -62,8 +61,7 @@ class HomePage(QWidget):
         lay.addWidget(self.search_edit)
 
         # ── Results list ──────────────────────────────────────────────────────
-        self.results = QListWidget(frameShape=QFrame.NoFrame, spacing=4)
-        self.results.itemClicked.connect(on_open)
+        self.results = QListWidget()
         self.results.setStyleSheet(
             """
             QListWidget { border:none; background:#fff; }
@@ -77,7 +75,6 @@ class HomePage(QWidget):
         """Invoke external search callback and render its results."""
         query = self.search_edit.text().strip()
         if not query:
-            self._show_no_results()
             return
 
         matches, err = r_find(query)
@@ -90,7 +87,9 @@ class HomePage(QWidget):
         """Populate the QListWidget with FileCard widgets."""
         self.results.clear()
         if not files:
-            self._show_no_results()
+            empty = QListWidgetItem("No results found.")
+            empty.setFlags(Qt.ItemFlag.ItemIsEnabled)  # non‑selectable label
+            self.results.addItem(empty)
             return
         for file_obj in files:
             card = FileCard(file_obj)
@@ -98,10 +97,3 @@ class HomePage(QWidget):
             item.setSizeHint(card.sizeHint())
             self.results.addItem(item)
             self.results.setItemWidget(item, card)
-
-    def _show_no_results(self):
-        """Display a static list item indicating zero matches."""
-        self.results.clear()
-        empty = QListWidgetItem("No results found.")
-        empty.setFlags(Qt.ItemIsEnabled)  # non‑selectable label
-        self.results.addItem(empty)

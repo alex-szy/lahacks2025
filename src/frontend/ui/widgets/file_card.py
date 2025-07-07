@@ -8,31 +8,11 @@ from PySide6.QtCore import QSize
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
 from frontend.utils.icons import icon
-from engine.db.models import File  # adjust import path if necessary
+from utils import SUPPORTED_TEXT_EXTENSIONS
 
 # Extensions we want to show custom icons for (svg files must exist under
 # your icon theme with the same *key* name).
-SUPPORTED_TEXT_EXTENSIONS = [
-    "txt",
-    "md",
-    "json",
-    "csv",
-    "tsv",
-    "yaml",
-    "yml",
-    "ini",
-    "xml",
-    "html",
-    "py",
-    "java",
-    "js",
-    "cpp",
-    "c",
-    "h",
-    "sh",
-    "pdf",
-    "docx",
-]
+
 
 
 class FileCard(QWidget):
@@ -55,10 +35,9 @@ class FileCard(QWidget):
         layout.setSpacing(14)
 
         # ── File icon ───────────────────────────────────────────────────────
-        ext = file.get("extension", "").lstrip(".").lower()
-        icon_key = ext if ext in SUPPORTED_TEXT_EXTENSIONS else "file"
+        ext = file.get("extension", "").lower()
         icon_lbl = QLabel()
-        qicon = icon(icon_key, 28).pixmap(QSize(28, 28))
+        qicon = icon(ext, 28).pixmap(QSize(28, 28))
         icon_lbl.setPixmap(qicon)
         layout.addWidget(icon_lbl)
 
@@ -69,7 +48,6 @@ class FileCard(QWidget):
         name_lbl.setStyleSheet(
             """
             color: #222;
-            font-family: "Poppins", sans-serif;
             font-weight: 600;
             font-size: 14px;
             """
@@ -80,7 +58,6 @@ class FileCard(QWidget):
         summary_lbl.setStyleSheet(
             """
             color: #666;
-            font-family: "Poppins", sans-serif;
             font-size: 12px;
             """
         )
@@ -96,7 +73,6 @@ class FileCard(QWidget):
             meta_lbl.setStyleSheet(
                 """
                 color: #777;
-                font-family: "Poppins", sans-serif;
                 font-size: 11px;
                 """
             )

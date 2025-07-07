@@ -33,10 +33,6 @@ class MainWindow(QMainWindow):
         # TODO: backend search integration
         print("Search:", text)
 
-    def open_item(self, item: QListWidgetItem):
-        card = self.results_list.itemWidget(item)
-        print("Open", card.path)
-
     def backend_add_watch(self, path: Path):
         return
         print(">> Watch this folder in backend:", path)
@@ -53,17 +49,14 @@ class MainWindow(QMainWindow):
         sidebar.setFixedWidth(72)
         sidebar.setStyleSheet("background:#ffffff; border-right:1px solid #ffffff;")
         side_lay = QVBoxLayout(sidebar)
-        side_lay.setAlignment(Qt.AlignTop)
+        side_lay.setAlignment(Qt.AlignmentFlag.AlignTop)
         side_lay.setContentsMargins(12, 16, 12, 16)
         side_lay.setSpacing(10)
 
         btn_info = [
             ("search", "Search"),  # ← new home button
             ("watch", "Watch Folders"),
-            ("folder", "Folders"),
-            ("keys", "API Keys"),
-            ("settings", "Settings"),
-            ("login", "Login"),
+            ("folder", "Folders")
         ]
         self.nav_btns = []
         for key, tip in btn_info:
@@ -74,7 +67,7 @@ class MainWindow(QMainWindow):
 
         # ---------- Stacked pages --------------------------------------
         self.pages = QStackedWidget()
-        self.home = HomePage(self.open_item)
+        self.home = HomePage()
         self.watch = WatchPage(self.backend_add_watch)  # pass your backend hook
         self.dest = DestinationPage()
         self.pages.addWidget(self.home)  # index 0

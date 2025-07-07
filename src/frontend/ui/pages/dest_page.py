@@ -26,7 +26,6 @@ class DestinationPage(QWidget):
     def __init__(self, add_callback=None):
         super().__init__()
         self._add_cb = add_callback or self._default_add_callback
-        self.setStyleSheet('font-family:"Poppins",sans-serif;')
 
         root = QVBoxLayout(self)
         root.setContentsMargins(32, 24, 32, 24)
@@ -42,7 +41,7 @@ class DestinationPage(QWidget):
         self.path_edit.setMinimumWidth(350)
         self.path_edit.setStyleSheet(
             "border:1px solid #d4d4d4; border-radius:6px; padding:6px 8px;"
-            'font-family:"Poppins",sans-serif; font-size:13px;color:#000000;'
+            'font-size:13px;color:#000000;'
         )
         row.addWidget(self.path_edit, 1)
 
@@ -61,7 +60,6 @@ class DestinationPage(QWidget):
                     border:1px solid #d4d4d4;
                     border-radius:6px;
                     padding:6px 18px;
-                    font-family:"Poppins",sans-serif;
                     font-size:13px;
                 }
                 QPushButton:hover { background:#f7f7f7; }
@@ -83,7 +81,6 @@ class DestinationPage(QWidget):
                 border:1px solid #d4d4d4;
                 border-radius:10px;
                 gridline-color:#ececec;
-                font-family:"Poppins",sans-serif;
                 font-size:14px;
                 color:#000000;
             }
@@ -96,9 +93,9 @@ class DestinationPage(QWidget):
             }
             """
         )
-        self.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
-        self.table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
-        self.table.setSelectionMode(QAbstractItemView.NoSelection)
+        self.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
+        self.table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
+        self.table.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
         root.addWidget(self.table, 1)
 
         self._load_existing_destinations()
@@ -118,7 +115,6 @@ class DestinationPage(QWidget):
             dialog.setStyleSheet(
                 """
                 QInputDialog {
-                    font-family: "Poppins", sans-serif;
                     font-size: 13px;
                     color: #000000;
                     background: #ffffff;
@@ -134,7 +130,6 @@ class DestinationPage(QWidget):
                     padding: 6px 8px;
                 }
                 QPushButton {
-                    font-family: "Poppins", sans-serif;
                     font-size: 13px;
                     color: #222;
                     background: #ffffff;
@@ -172,7 +167,6 @@ class DestinationPage(QWidget):
         dialog.setStyleSheet(
             """
             QInputDialog {
-                font-family: "Poppins", sans-serif;
                 font-size: 13px;
                 color: #000000;
                 background: #ffffff;
@@ -188,7 +182,6 @@ class DestinationPage(QWidget):
                 padding: 6px 8px;
             }
             QPushButton {
-                font-family: "Poppins", sans-serif;
                 font-size: 13px;
                 color: #222;
                 background: #ffffff;

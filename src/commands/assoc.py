@@ -1,45 +1,12 @@
-from pathlib import Path
-
 import click
 
-from settings import settings
-from utils import is_forbidden
+import api.assoc
 
 
 @click.group()
 def assoc():
     """Configure destination folder associations."""
     pass
-
-
-def _add(folder_path: str, description: str):
-    folder_path = str(Path(folder_path).resolve())
-    if is_forbidden(folder_path):
-        raise click.BadParameter("Access is denied", param_hint="FOLDER_PATH")
-    paths = settings.get_folder_paths()
-    paths[folder_path] = description
-    settings.set_folder_paths(paths)
-    click.echo(f"Sucessfully added: {folder_path}, {description}")
-
-
-def _remove(folder_path: str):
-    folder_path = str(Path(folder_path).resolve())
-    paths = settings.get_folder_paths()
-    if folder_path in paths:
-        del paths[folder_path]
-        settings.set_folder_paths(paths)
-
-
-def _list_assoc():
-    paths = settings.get_folder_paths()
-    if not paths:
-        click.echo("No folder path associations configured.")
-        return
-    click.echo("Existing Paths:\n")
-    for path, info in paths.items():
-        click.echo(path)
-        click.echo(info)
-        click.echo("")
 
 
 @assoc.command()
@@ -51,17 +18,26 @@ def _list_assoc():
 )
 def add(folder_path: str, description: str):
     """Add a folder association."""
-    _add(folder_path, description)
+    _, err = api.assoc.add(folder_path, description)
+    if err:
+        raise click.ClickException(err)
 
 
 @assoc.command()
 @click.argument("folder_path")
 def remove(folder_path: str):
     """Remove a folder association."""
-    _remove(folder_path)
+    _, err = api.assoc.remove(folder_path)
+    if err:
+        raise click.ClickException(err)
 
 
 @assoc.command(name="list")
 def list_assoc():
     """List folder associations."""
-    _list_assoc()
+    paths = api.assoc.list()
+    if not paths:
+        click.echo("No folder path associations configured.")
+        return
+    for path, info in paths.items():
+        click.echo(f"\033[0m{info} \033[93m-> \033[96m{path}")

@@ -14,19 +14,19 @@ from PySide6.QtWidgets import (
     QTableWidgetItem,
     QVBoxLayout,
     QWidget,
+    QMessageBox,
+    QFrame,
 )
+from PySide6.QtCore import Qt
 
-from commands import watch
-from settings import settings
+from api import watch
 
 
 class WatchPage(QWidget):
     """Add & show folders that the backend will watch."""
 
-    def __init__(self, add_callback):
+    def __init__(self):
         super().__init__()
-        # self._add_cb = add_callback
-        self._add_cb = watch._add
 
         root = QVBoxLayout(self)
         root.setContentsMargins(32, 24, 32, 24)
@@ -41,19 +41,17 @@ class WatchPage(QWidget):
         self.path_edit = QLineEdit(placeholderText="Enter folder path …")
         self.path_edit.setMinimumWidth(350)
         self.path_edit.setStyleSheet(
-            "border:1px solid #d4d4d4; border-radius:6px; padding:6px 8px;"
-            'font-size:13px;color:#000000;'
+            "border:1px solid #d4d4d4; padding:6px 8px;font-size:13px;"
         )
         row.addWidget(self.path_edit, 1)
 
-        select_btn = QPushButton("Select")
-        select_btn.clicked.connect(self._browse)
+        buttons = [
+            (QPushButton("Browse"), self.handle_browse),
+            (QPushButton("Add"), self.handle_add),
+        ]
 
-        add_btn = QPushButton("Add")
-        add_btn.clicked.connect(self._add)
-
-        for b in (select_btn, add_btn):
-            b.setStyleSheet(
+        for button, handler in buttons:
+            button.setStyleSheet(
                 """
                 QPushButton {
                     background:#ffffff;
@@ -67,9 +65,8 @@ class WatchPage(QWidget):
                 QPushButton:pressed { background:#ededed; }
                 """
             )
-
-        row.addWidget(select_btn)
-        row.addWidget(add_btn)
+            button.clicked.connect(handler)
+            row.addWidget(button)
 
         root.addLayout(row)
 
@@ -79,21 +76,14 @@ class WatchPage(QWidget):
         self.table.setStyleSheet(
             """
             QTableWidget {
-                border:1px solid #d4d4d4;
                 border-radius:10px;
                 gridline-color:#ececec;
                 font-size:14px;
                 color:#000000;                 /* ← pure black text */
             }
-            QHeaderView::section {
-                background:#f9f9f9;
-                border:none;
-                font-weight:600;
-                padding:6px 10px;
-                color:#000000;                 /* header text black as well */
-            }
             """
         )
+        self.table.setFrameStyle(QFrame.Shape.NoFrame)
 
         self.table.horizontalHeader().setSectionResizeMode(
             0, QHeaderView.ResizeMode.Stretch
@@ -106,42 +96,37 @@ class WatchPage(QWidget):
         self.table.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
         root.addWidget(self.table, 1)
 
-        self._load_existing_paths()
+        self.update()
 
-    def _load_existing_paths(self):
+    def update(self, *args, **kwargs):
         """Load previously watched paths and display them."""
-        for path in settings.get_watch_paths():
+        super().update(*args, **kwargs)
+        self.table.setRowCount(0)
+        self.table.clearContents()
+        for path in watch.list():
             self._insert_path(path)
 
-    def _browse(self):
-        # native Qt folder dialog (non-blocking)
+    def handle_browse(self):
         path = QFileDialog.getExistingDirectory(self, "Choose a folder to watch")
-        # if path:
-        #     self.path_edit.setText(path)
-        print(path)
         if path:
-            self._add_cb(path)
-            self._insert_path(path)
-            # Ask user for description
-            # description, ok = QInputDialog.getText(self, "Enter Description", "Describe this folder:")
-            # if ok and description.strip():
-            #     self._insert_path(path)
-            # self._add_cb("".join(list(str(path))), description)  # Notify backend (if needed for your app)
+            self._add_path(path)
 
-            # --- Save to assoc storage ---
-            # self._add_cb(path)
-            # cfg = FileSystemConfig()
-            # cfg.append_entry(path, description)
-            # else:
-            #     print("No description provided. Skipped adding.")
-
-    def _add(self):
+    def handle_add(self):
         raw = self.path_edit.text().strip()
         if not raw:
             return
-        self._insert_path(raw)
-        self._add_cb(str(Path(raw).resolve()))  # let backend know
-        self.path_edit.clear()
+        cleaned = str(Path(raw).expanduser().resolve())
+        if self._add_path(cleaned):
+            self.path_edit.clear()
+
+    def _add_path(self, path):
+        ok, err = watch.add(path)
+        if err:
+            QMessageBox.critical(
+                self, "Add watch path failed", f"Adding watch path failed: {err}"
+            )
+        self.update()
+        return ok
 
     def _insert_path(self, p: str):
         rname = Path(p).name or p

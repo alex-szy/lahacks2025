@@ -4,7 +4,7 @@ import pkgutil
 
 import click
 
-import commands
+import cli
 from settings import BASE_DIR
 
 logging.basicConfig(
@@ -15,22 +15,22 @@ logging.basicConfig(
 
 
 @click.group()
-def cli():
+def main():
     """Munchkin CLI."""
     pass
 
 
 # Dynamically load all commands
 def _register_commands():
-    package = commands
+    package = cli
     for loader, module_name, is_pkg in pkgutil.iter_modules(package.__path__):
         module = importlib.import_module(f"{package.__name__}.{module_name}")
         if hasattr(module, module_name):
             cmd = getattr(module, module_name)
-            cli.add_command(cmd)
+            main.add_command(cmd)
 
 
 _register_commands()
 
 if __name__ == "__main__":
-    cli()
+    main()

@@ -7,11 +7,10 @@ from typing import Optional
 from PySide6.QtCore import QSize
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
-from frontend.utils.icons import icon
+from ui.utils.icons import icon
 
 # Extensions we want to show custom icons for (svg files must exist under
 # your icon theme with the same *key* name).
-
 
 
 class FileCard(QWidget):

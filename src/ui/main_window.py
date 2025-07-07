@@ -13,11 +13,11 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from frontend.ui.pages.dest_page import DestinationPage
-from frontend.ui.pages.home_page import HomePage
-from frontend.ui.pages.watch_page import WatchPage
-from frontend.ui.widgets.nav_button import NavButton
-from frontend.utils.icons import icon  # new helper name
+from ui.pages.dest_page import DestinationPage
+from ui.pages.home_page import HomePage
+from ui.pages.watch_page import WatchPage
+from ui.widgets.nav_button import NavButton
+from ui.utils.icons import icon  # new helper name
 
 
 class MainWindow(QMainWindow):

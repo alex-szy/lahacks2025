@@ -1,6 +1,6 @@
 import click
 
-from frontend.ui.main_window import main
+from ui.main_window import main
 
 
 @click.command()

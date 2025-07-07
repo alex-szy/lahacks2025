@@ -8,7 +8,6 @@ from PySide6.QtCore import QSize
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
 from frontend.utils.icons import icon
-from utils import SUPPORTED_TEXT_EXTENSIONS
 
 # Extensions we want to show custom icons for (svg files must exist under
 # your icon theme with the same *key* name).
@@ -30,6 +29,8 @@ class FileCard(QWidget):
         super().__init__()
         self.setStyleSheet("background:transparent;")  # allow list‑item highlight
 
+        self.path = file.get("path", "")
+
         layout = QHBoxLayout(self)
         layout.setContentsMargins(4, 6, 4, 6)
         layout.setSpacing(14)
@@ -47,7 +48,6 @@ class FileCard(QWidget):
         name_lbl = QLabel(file.get("name", "Unnamed file"))
         name_lbl.setStyleSheet(
             """
-            color: #222;
             font-weight: 600;
             font-size: 14px;
             """

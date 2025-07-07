@@ -1,4 +1,7 @@
 import logging
+import os
+import subprocess
+import sys
 
 from PySide6.QtCore import QSize, Qt
 from PySide6.QtWidgets import (
@@ -10,7 +13,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from commands.find import _find as r_find
+from api.find import find
 from frontend.ui.widgets.file_card import FileCard
 from frontend.utils.icons import icon
 
@@ -43,7 +46,6 @@ class HomePage(QWidget):
         self.search_edit.setStyleSheet(
             """
             QLineEdit {
-                background:#ffffff; color:#222;
                 font-size:14px;
                 border:2px solid #d4d4d4; border-radius:23px; padding-left:48px;
             }
@@ -62,10 +64,11 @@ class HomePage(QWidget):
 
         # ── Results list ──────────────────────────────────────────────────────
         self.results = QListWidget()
+        self.results.itemDoubleClicked.connect(self._on_open)
         self.results.setStyleSheet(
             """
-            QListWidget { border:none; background:#fff; }
-            QListWidget::item:selected{ background:#ebf0ff; border-radius:6px; }
+            QListWidget::item{ border-radius: 6px; }
+            QListWidget::item:selected{ background:#ebf0ff; }
             """
         )
         lay.addWidget(self.results)
@@ -77,7 +80,7 @@ class HomePage(QWidget):
         if not query:
             return
 
-        matches, err = r_find(query)
+        matches, err = find(query)
         if err:
             logging.error(f"search error: {err}")
 
@@ -93,7 +96,16 @@ class HomePage(QWidget):
             return
         for file_obj in files:
             card = FileCard(file_obj)
-            item = QListWidgetItem()
+            item = QListWidgetItem(listview=self.results)
             item.setSizeHint(card.sizeHint())
-            self.results.addItem(item)
             self.results.setItemWidget(item, card)
+
+    def _on_open(self, item: QListWidgetItem):
+        card = self.results.itemWidget(item)
+        filepath = card.path
+        if sys.platform == "darwin":  # macOS
+            subprocess.call(("open", filepath))
+        elif sys.platform == "win32":  # Windows
+            os.startfile(filepath)
+        else:  # linux variants
+            subprocess.call(("xdg-open", filepath))

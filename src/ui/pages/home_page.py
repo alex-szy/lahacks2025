@@ -1,4 +1,3 @@
-import logging
 import os
 import subprocess
 import sys
@@ -11,6 +10,7 @@ from PySide6.QtWidgets import (
     QListWidgetItem,
     QVBoxLayout,
     QWidget,
+    QMessageBox,
 )
 
 from api.find import find
@@ -64,7 +64,7 @@ class HomePage(QWidget):
 
         # ── Results list ──────────────────────────────────────────────────────
         self.results = QListWidget()
-        self.results.itemDoubleClicked.connect(self._on_open)
+        self.results.itemDoubleClicked.connect(self._handle_open)
         self.results.setStyleSheet(
             """
             QListWidget::item{ border-radius: 6px; }
@@ -82,7 +82,10 @@ class HomePage(QWidget):
 
         matches, err = find(query)
         if err:
-            logging.error(f"search error: {err}")
+            QMessageBox.critical(
+                self, "Error searching", f"Error searching for file: {err}"
+            )
+            return
 
         self._render_results(matches)
 
@@ -100,7 +103,7 @@ class HomePage(QWidget):
             item.setSizeHint(card.sizeHint())
             self.results.setItemWidget(item, card)
 
-    def _on_open(self, item: QListWidgetItem):
+    def _handle_open(self, item: QListWidgetItem):
         card = self.results.itemWidget(item)
         filepath = card.path
         if sys.platform == "darwin":  # macOS

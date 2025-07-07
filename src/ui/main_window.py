@@ -24,9 +24,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("Semantic File Explorer")
         self.resize(1050, 660)
-        self._build_ui()
 
-    def _build_ui(self):
         central = QWidget()
         root = QHBoxLayout(central)
         root.setContentsMargins(0, 0, 0, 0)
@@ -68,13 +66,16 @@ class MainWindow(QMainWindow):
         # default to Home
         self.nav_btns[0].setChecked(True)
         for i, btn in enumerate(self.nav_btns):
-            btn.clicked.connect(lambda _, ix=i: self.pages.setCurrentIndex(ix))
+            btn.clicked.connect(self.make_change_tab_to(i))
 
-        self.pages.currentChanged.connect(self.on_page_change)
+    def make_change_tab_to(self, index):
+        """Returns a helper which switches to the correct page and updates it"""
 
-    def on_page_change(self, index):
-        widget = self.pages.widget(index)
-        widget.update()
+        def inner():
+            self.pages.setCurrentIndex(index)
+            self.pages.widget(index).update()
+
+        return inner
 
 
 def main():

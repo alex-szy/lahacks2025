@@ -26,8 +26,6 @@ class FileCard(QWidget):
 
     def __init__(self, file: dict[str, str]):
         super().__init__()
-        self.setStyleSheet("background:transparent;")  # allow list‑item highlight
-
         self.path = file.get("path", "")
 
         layout = QHBoxLayout(self)
@@ -45,21 +43,9 @@ class FileCard(QWidget):
         text_col = QVBoxLayout()
 
         name_lbl = QLabel(file.get("name", "Unnamed file"))
-        name_lbl.setStyleSheet(
-            """
-            font-weight: 600;
-            font-size: 14px;
-            """
-        )
 
         summary_lbl = QLabel(file.get("summary", "No summary available."))
         summary_lbl.setWordWrap(True)
-        summary_lbl.setStyleSheet(
-            """
-            color: #666;
-            font-size: 12px;
-            """
-        )
 
         text_col.addWidget(name_lbl)
         text_col.addWidget(summary_lbl)
@@ -69,12 +55,6 @@ class FileCard(QWidget):
         meta_str = self._build_meta_string(file)
         if meta_str:
             meta_lbl = QLabel(meta_str)
-            meta_lbl.setStyleSheet(
-                """
-                color: #777;
-                font-size: 11px;
-                """
-            )
             layout.addWidget(meta_lbl)
 
     # ── Helper methods ──────────────────────────────────────────────────────

@@ -18,10 +18,3 @@ class NavButton(QToolButton):
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.setCheckable(True)
         self.setAutoExclusive(True)
-        self.setStyleSheet(
-            """
-            QToolButton { border:none; background:transparent; padding:6px; }
-            QToolButton:hover { background:#f2f2f2; border-radius:6px; }
-            QToolButton:checked { background:#ebf0ff; border-radius:6px; }
-            """
-        )

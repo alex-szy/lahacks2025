@@ -80,17 +80,8 @@ class MainWindow(QMainWindow):
 
 def main():
     app = QApplication(sys.argv)
+    app.styleHints().setColorScheme(Qt.ColorScheme.Light)
     win = MainWindow()
-    win.setStyleSheet(
-        """
-        font: "Helvetica Neue";
-        font-size: 10px;
-        color: #000000;
-        background: #ffffff;
-        border: none;
-        border-radius: 6px;
-        """
-    )
     win.show()
     sys.exit(app.exec())
 

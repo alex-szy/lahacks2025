@@ -2,19 +2,17 @@ import os
 import subprocess
 import sys
 
-from PySide6.QtCore import QSize, Qt
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
-    QLabel,
     QLineEdit,
     QListWidget,
     QListWidgetItem,
+    QMessageBox,
     QVBoxLayout,
     QWidget,
-    QMessageBox,
 )
 
 from api.find import find
-from ui.utils.icons import icon
 from ui.widgets.file_card import FileCard
 
 
@@ -42,21 +40,6 @@ class HomePage(QWidget):
 
         # ── Search bar ───────────────────────────────────────────────────────
         self.search_edit = QLineEdit(placeholderText="Search for a file …")
-        self.search_edit.setFixedHeight(46)
-        self.search_edit.setStyleSheet(
-            """
-            QLineEdit {
-                font-size:14px;
-                border:2px solid #d4d4d4; border-radius:23px; padding-left:48px;
-            }
-            QLineEdit:focus { border-color:#000000; }
-            QLineEdit::placeholder { color:#999; }
-            """
-        )
-        # leading magnifying‑glass icon
-        mag = QLabel(self.search_edit)
-        mag.setPixmap(icon("search", 24).pixmap(QSize(24, 24)))
-        mag.move(16, 11)
 
         # Trigger search *only* when user presses Return/Enter
         self.search_edit.returnPressed.connect(self._handle_search)
@@ -65,12 +48,6 @@ class HomePage(QWidget):
         # ── Results list ──────────────────────────────────────────────────────
         self.results = QListWidget()
         self.results.itemDoubleClicked.connect(self._handle_open)
-        self.results.setStyleSheet(
-            """
-            QListWidget::item{ border-radius: 6px; }
-            QListWidget::item:selected{ background:#ebf0ff; }
-            """
-        )
         lay.addWidget(self.results)
 
     # ── Internal helpers ─────────────────────────────────────────────────────

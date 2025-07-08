@@ -3,10 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 
 from PySide6.QtWidgets import (
-    QAbstractItemView,
     QFileDialog,
     QHBoxLayout,
-    QHeaderView,
     QInputDialog,
     QLabel,
     QLineEdit,
@@ -32,17 +30,11 @@ class DestinationPage(QWidget):
         root.setSpacing(18)
 
         title = QLabel("Add Destination Folders")
-        title.setStyleSheet("font-size:18px; font-weight:600; color:#222;")
         root.addWidget(title)
 
         # ---- input row ---------------------------------------------------
         row = QHBoxLayout()
         self.path_edit = QLineEdit(placeholderText="Enter folder path …")
-        self.path_edit.setMinimumWidth(350)
-        self.path_edit.setStyleSheet(
-            "border:1px solid #d4d4d4; border-radius:6px; padding:6px 8px;"
-            'font-size:13px;color:#000000;'
-        )
         row.addWidget(self.path_edit, 1)
 
         select_btn = QPushButton("Select")
@@ -50,22 +42,6 @@ class DestinationPage(QWidget):
 
         add_btn = QPushButton("Add")
         add_btn.clicked.connect(self._add)
-
-        for b in (select_btn, add_btn):
-            b.setStyleSheet(
-                """
-                QPushButton {
-                    background:#ffffff;
-                    color:#222;
-                    border:1px solid #d4d4d4;
-                    border-radius:6px;
-                    padding:6px 18px;
-                    font-size:13px;
-                }
-                QPushButton:hover { background:#f7f7f7; }
-                QPushButton:pressed { background:#ededed; }
-                """
-            )
 
         row.addWidget(select_btn)
         row.addWidget(add_btn)
@@ -75,27 +51,6 @@ class DestinationPage(QWidget):
         # ---- table of paths ------------------------------------------------
         self.table = QTableWidget(0, 2)
         self.table.setHorizontalHeaderLabels(["Root Name", "Full Path"])
-        self.table.setStyleSheet(
-            """
-            QTableWidget {
-                border:1px solid #d4d4d4;
-                border-radius:10px;
-                gridline-color:#ececec;
-                font-size:14px;
-                color:#000000;
-            }
-            QHeaderView::section {
-                background:#f9f9f9;
-                border:none;
-                font-weight:600;
-                padding:6px 10px;
-                color:#000000;
-            }
-            """
-        )
-        self.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
-        self.table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
-        self.table.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
         root.addWidget(self.table, 1)
 
         self._load_existing_destinations()
@@ -112,35 +67,6 @@ class DestinationPage(QWidget):
             dialog = QInputDialog(self)
             dialog.setWindowTitle("Folder Description")
             dialog.setLabelText("Describe this folder:")
-            dialog.setStyleSheet(
-                """
-                QInputDialog {
-                    font-size: 13px;
-                    color: #000000;
-                    background: #ffffff;
-                }
-                QLabel {
-                    color: #000000;
-                }
-                QLineEdit {
-                    color: #000000;
-                    background: #ffffff;
-                    border: 1px solid #d4d4d4;
-                    border-radius: 6px;
-                    padding: 6px 8px;
-                }
-                QPushButton {
-                    font-size: 13px;
-                    color: #222;
-                    background: #ffffff;
-                    border: 1px solid #d4d4d4;
-                    border-radius: 6px;
-                    padding: 6px 18px;
-                }
-                QPushButton:hover { background: #f7f7f7; }
-                QPushButton:pressed { background: #ededed; }
-                """
-            )
             ok = dialog.exec()
             description = dialog.textValue()
             if ok and description.strip():
@@ -164,35 +90,6 @@ class DestinationPage(QWidget):
         dialog = QInputDialog(self)
         dialog.setWindowTitle("Folder Description")
         dialog.setLabelText("Describe this folder:")
-        dialog.setStyleSheet(
-            """
-            QInputDialog {
-                font-size: 13px;
-                color: #000000;
-                background: #ffffff;
-            }
-            QLabel {
-                color: #000000;
-            }
-            QLineEdit {
-                color: #000000;
-                background: #ffffff;
-                border: 1px solid #d4d4d4;
-                border-radius: 6px;
-                padding: 6px 8px;
-            }
-            QPushButton {
-                font-size: 13px;
-                color: #222;
-                background: #ffffff;
-                border: 1px solid #d4d4d4;
-                border-radius: 6px;
-                padding: 6px 18px;
-            }
-            QPushButton:hover { background: #f7f7f7; }
-            QPushButton:pressed { background: #ededed; }
-            """
-        )
         ok = dialog.exec()
         description = dialog.textValue()
 
@@ -202,13 +99,6 @@ class DestinationPage(QWidget):
             self.path_edit.clear()
         else:
             print("No description provided. Skipped adding.")
-        # description, ok = QInputDialog.getText(self, "Folder Description", "Describe this folder:")
-        # if ok and description.strip():
-        #     self._insert_path(raw)
-        #     self._add_cb(raw, description.strip())
-        #     self.path_edit.clear()
-        # else:
-        #     print("No description provided. Skipped adding.")
 
     def _insert_path(self, p: str):
         """Insert new entry into the table."""

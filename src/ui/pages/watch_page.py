@@ -6,6 +6,7 @@ from PySide6.QtWidgets import (
     QAbstractItemView,
     QFileDialog,
     QHBoxLayout,
+    QHeaderView,
     QLabel,
     QLineEdit,
     QMessageBox,
@@ -39,8 +40,8 @@ class WatchPage(QWidget):
         row.addWidget(self.path_edit, 1)
 
         buttons = [
-            (QPushButton("Browse"), self.handle_browse),
             (QPushButton("Add"), self.handle_add),
+            (QPushButton("Browse"), self.handle_browse),
         ]
 
         for button, handler in buttons:
@@ -51,8 +52,12 @@ class WatchPage(QWidget):
 
         # ---- table of paths ---------------------------------------------
         self.table = QTableWidget(0, 1)
-        self.table.setHorizontalHeaderLabels(["Full Path"])
-        self.table.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
+        self.table.setHorizontalHeaderLabels(["Path"])
+        self.table.horizontalHeader().setSectionResizeMode(
+            QHeaderView.ResizeMode.Stretch
+        )
+        self.table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.table.itemDoubleClicked.connect(self.handle_remove)
         root.addWidget(self.table, 1)
 
         self.update()
@@ -88,5 +93,21 @@ class WatchPage(QWidget):
             QMessageBox.critical(
                 self, "Add watch path failed", f"Adding watch path failed: {err}"
             )
-        self.update()
+        else:
+            self.update()
         return ok
+
+    def handle_remove(self, item: QTableWidgetItem):
+        """Prompts the user for removal of an entry"""
+        path_cell = self.table.item(item.row(), 0)
+        if not path_cell:
+            return
+        path = path_cell.text()
+        button = QMessageBox.question(
+            self,
+            "Remove watch folder",
+            f"Stop watching the folder '{path}'?",
+        )
+        if button == QMessageBox.StandardButton.Yes:
+            watch.remove(path_cell.text())
+            self.update()

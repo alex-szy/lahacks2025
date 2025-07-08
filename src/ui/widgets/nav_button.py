@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from PySide6.QtCore import QSize, Qt
+from PySide6.QtCore import QSize
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QToolButton,
@@ -15,6 +15,5 @@ class NavButton(QToolButton):
         self.setIcon(icon)
         self.setIconSize(QSize(22, 22))
         self.setToolTip(tooltip)
-        self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.setCheckable(True)
         self.setAutoExclusive(True)

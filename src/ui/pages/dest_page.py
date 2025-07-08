@@ -3,11 +3,14 @@ from __future__ import annotations
 from pathlib import Path
 
 from PySide6.QtWidgets import (
+    QAbstractItemView,
     QFileDialog,
     QHBoxLayout,
+    QHeaderView,
     QInputDialog,
     QLabel,
     QLineEdit,
+    QMessageBox,
     QPushButton,
     QTableWidget,
     QTableWidgetItem,
@@ -15,15 +18,15 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+import api.assoc
 from settings import settings
 
 
 class DestinationPage(QWidget):
     """Add & show destination folders for saving classified files."""
 
-    def __init__(self, add_callback=None):
+    def __init__(self):
         super().__init__()
-        self._add_cb = add_callback or self._default_add_callback
 
         root = QVBoxLayout(self)
         root.setContentsMargins(32, 24, 32, 24)
@@ -37,80 +40,85 @@ class DestinationPage(QWidget):
         self.path_edit = QLineEdit(placeholderText="Enter folder path …")
         row.addWidget(self.path_edit, 1)
 
-        select_btn = QPushButton("Select")
-        select_btn.clicked.connect(self._browse)
+        buttons = [
+            (QPushButton("Add"), self.handle_add),
+            (QPushButton("Browse"), self.handle_browse),
+        ]
 
-        add_btn = QPushButton("Add")
-        add_btn.clicked.connect(self._add)
-
-        row.addWidget(select_btn)
-        row.addWidget(add_btn)
+        for button, handler in buttons:
+            button.clicked.connect(handler)
+            row.addWidget(button)
 
         root.addLayout(row)
 
         # ---- table of paths ------------------------------------------------
         self.table = QTableWidget(0, 2)
-        self.table.setHorizontalHeaderLabels(["Root Name", "Full Path"])
+        self.table.setHorizontalHeaderLabels(["Path", "Description"])
+        self.table.horizontalHeader().setSectionResizeMode(
+            QHeaderView.ResizeMode.Stretch
+        )
+        self.table.itemDoubleClicked.connect(self.handle_remove)
+        self.table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
         root.addWidget(self.table, 1)
 
-        self._load_existing_destinations()
+        self.update()
 
-    def _load_existing_destinations(self):
+    def update(self, *args, **kwargs):
         """Load existing destination folders + descriptions into the table."""
-        for folder_path in settings.get_folder_paths().keys():
-            self._insert_path(folder_path)
+        super().update(*args, **kwargs)
+        self.table.setRowCount(0)
+        for path, description in settings.get_folder_paths().items():
+            r = self.table.rowCount()
+            self.table.insertRow(r)
+            self.table.setItem(r, 0, QTableWidgetItem(path))
+            self.table.setItem(r, 1, QTableWidgetItem(description))
 
-    def _browse(self):
+    def handle_browse(self):
         """Open a folder picker and prompt for description."""
         path = QFileDialog.getExistingDirectory(self, "Choose a destination folder")
         if path:
-            dialog = QInputDialog(self)
-            dialog.setWindowTitle("Folder Description")
-            dialog.setLabelText("Describe this folder:")
-            ok = dialog.exec()
-            description = dialog.textValue()
-            if ok and description.strip():
-                self._insert_path(path)
-                self._add_cb(path, description.strip())
-            else:
-                print("No description provided. Skipped adding.")
-        # if path:
-        #     description, ok = QInputDialog.getText(self, "Folder Description", "Describe this folder:")
-        #     if ok and description.strip():
-        #         self._insert_path(path)
-        #         self._add_cb(path, description.strip())
-        #     else:
-        #         print("No description provided. Skipped adding.")
+            self._add_path(path)
 
-    def _add(self):
+    def handle_add(self):
         """Manually add from the QLineEdit input."""
         raw = self.path_edit.text().strip()
         if not raw:
             return
+        cleaned = str(Path(raw).expanduser().resolve())
+        if self._add_path(cleaned):
+            self.path_edit.clear()
+
+    def _add_path(self, folder_path: str):
+        """Default backend logic: uses assoc."""
         dialog = QInputDialog(self)
         dialog.setWindowTitle("Folder Description")
         dialog.setLabelText("Describe this folder:")
         ok = dialog.exec()
         description = dialog.textValue()
-
-        if ok and description.strip():
-            self._insert_path(raw)
-            self._add_cb(raw, description.strip())
-            self.path_edit.clear()
+        if not (ok and description.strip()):
+            return False
+        ok, err = api.assoc.add(folder_path, description)
+        if err:
+            QMessageBox.critical(
+                self,
+                "Add folder association failed",
+                f"Adding folder association failed: {err}",
+            )
         else:
-            print("No description provided. Skipped adding.")
+            self.update()
+        return ok
 
-    def _insert_path(self, p: str):
-        """Insert new entry into the table."""
-        rname = Path(p).name or p
-        r = self.table.rowCount()
-        self.table.insertRow(r)
-        self.table.setItem(r, 0, QTableWidgetItem(rname))
-        self.table.setItem(r, 1, QTableWidgetItem(p))
-
-    def _default_add_callback(self, folder_path: str, description: str):
-        """Default backend logic: uses assoc + config."""
-        folder_path = str(Path(folder_path).resolve())
-        paths = settings.get_folder_paths()
-        paths[folder_path] = description
-        settings.set_folder_paths(paths)
+    def handle_remove(self, item: QTableWidgetItem):
+        """Prompts the user for removal of an entry"""
+        path_cell = self.table.item(item.row(), 0)
+        if not path_cell:
+            return
+        path = path_cell.text()
+        button = QMessageBox.question(
+            self,
+            "Remove folder association",
+            f"Remove the folder association for the path '{path}'?",
+        )
+        if button == QMessageBox.StandardButton.Yes:
+            api.assoc.remove(path_cell.text())
+            self.update()

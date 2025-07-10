@@ -1,6 +1,6 @@
 import click
 
-from daemon_clerk import stop as stop_daemon
+import api.daemon
 
 
 @click.command()
@@ -8,5 +8,5 @@ def stop():
     """
     Stops the Munchkin Daemon
     """
-    stop_daemon()
+    api.daemon.stop()
     click.echo("Stopping munchkin daemon...")

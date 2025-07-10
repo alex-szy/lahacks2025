@@ -1,25 +1,22 @@
 # near the top
 import sys
-from pathlib import Path
 
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QFont
 from PySide6.QtWidgets import (
     QApplication,
     QFrame,
     QHBoxLayout,
-    QListWidgetItem,
     QMainWindow,
     QStackedWidget,
     QVBoxLayout,
     QWidget,
 )
 
-from frontend.ui.pages.dest_page import DestinationPage
-from frontend.ui.pages.home_page import HomePage
-from frontend.ui.pages.watch_page import WatchPage
-from frontend.ui.widgets.nav_button import NavButton
-from frontend.utils.icons import icon  # new helper name
+from ui.pages.dest_page import DestinationPage
+from ui.pages.home_page import HomePage
+from ui.pages.watch_page import WatchPage
+from ui.utils.icons import icon  # new helper name
+from ui.widgets.nav_button import NavButton
 
 
 class MainWindow(QMainWindow):
@@ -27,45 +24,25 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("Semantic File Explorer")
         self.resize(1050, 660)
-        self._build_ui()
 
-    def on_search(self, text: str):
-        # TODO: backend search integration
-        print("Search:", text)
-
-    def open_item(self, item: QListWidgetItem):
-        card = self.results_list.itemWidget(item)
-        print("Open", card.path)
-
-    def backend_add_watch(self, path: Path):
-        return
-        print(">> Watch this folder in backend:", path)
-        # TODO: plug into your FileSystemConfig / observer logic
-
-    def _build_ui(self):
         central = QWidget()
-        central.setStyleSheet("background: #ffffff;")
         root = QHBoxLayout(central)
         root.setContentsMargins(0, 0, 0, 0)
 
         # ---------- Sidebar --------------------------------------------
         sidebar = QFrame()
         sidebar.setFixedWidth(72)
-        sidebar.setStyleSheet("background:#ffffff; border-right:1px solid #ffffff;")
         side_lay = QVBoxLayout(sidebar)
-        side_lay.setAlignment(Qt.AlignTop)
+        side_lay.setAlignment(Qt.AlignmentFlag.AlignTop)
         side_lay.setContentsMargins(12, 16, 12, 16)
         side_lay.setSpacing(10)
 
         btn_info = [
-            ("search", "Search"),  # ← new home button
+            ("search", "Search"),
             ("watch", "Watch Folders"),
-            ("folder", "Folders"),
-            ("keys", "API Keys"),
-            ("settings", "Settings"),
-            ("login", "Login"),
+            ("folder", "Destination Folders"),
         ]
-        self.nav_btns = []
+        self.nav_btns: list[NavButton] = []
         for key, tip in btn_info:
             b = NavButton(icon(key), tip)
             side_lay.addWidget(b)
@@ -74,8 +51,8 @@ class MainWindow(QMainWindow):
 
         # ---------- Stacked pages --------------------------------------
         self.pages = QStackedWidget()
-        self.home = HomePage(self.open_item)
-        self.watch = WatchPage(self.backend_add_watch)  # pass your backend hook
+        self.home = HomePage()
+        self.watch = WatchPage()
         self.dest = DestinationPage()
         self.pages.addWidget(self.home)  # index 0
         self.pages.addWidget(self.watch)  # index 1
@@ -89,13 +66,21 @@ class MainWindow(QMainWindow):
         # default to Home
         self.nav_btns[0].setChecked(True)
         for i, btn in enumerate(self.nav_btns):
-            btn.clicked.connect(lambda _, ix=i: self.pages.setCurrentIndex(ix))
+            btn.clicked.connect(self.make_change_tab_to(i))
+
+    def make_change_tab_to(self, index):
+        """Returns a helper which switches to the correct page and updates it"""
+
+        def inner():
+            self.pages.setCurrentIndex(index)
+            self.pages.widget(index).update()
+
+        return inner
 
 
 def main():
     app = QApplication(sys.argv)
-    app.setFont(QFont("Helvetica Neue", 10))
-    app.setStyle("Fusion")
+    app.styleHints().setColorScheme(Qt.ColorScheme.Light)
     win = MainWindow()
     win.show()
     sys.exit(app.exec())

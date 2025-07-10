@@ -62,18 +62,21 @@ def generate_task_xml(
 @click.command()
 def install():
     """Run munchkin at logon"""
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".xml") as tmp:
-        tmp_path = Path(tmp.name)
+    if sys.platform == "win32":
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".xml") as tmp:
+            tmp_path = Path(tmp.name)
 
-    try:
-        generate_task_xml(TEMPLATE_XML, tmp_path)
+        try:
+            generate_task_xml(TEMPLATE_XML, tmp_path)
 
-        subprocess.run(
-            ["schtasks", "/Create", "/TN", TASK_NAME, "/XML", str(tmp_path), "/F"],
-            check=True,
-        )
-        click.echo("Scheduled task 'MunchkinDaemon' installed.")
-    finally:
-        if tmp_path.exists():
-            tmp_path.unlink()
-            click.echo("Temporary XML file deleted.")
+            subprocess.run(
+                ["schtasks", "/Create", "/TN", TASK_NAME, "/XML", str(tmp_path), "/F"],
+                check=True,
+            )
+            click.echo("Scheduled task 'MunchkinDaemon' installed.")
+        finally:
+            if tmp_path.exists():
+                tmp_path.unlink()
+                click.echo("Temporary XML file deleted.")
+    else:
+        click.echo("Whoops, this hasn't been implemented yet!")

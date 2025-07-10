@@ -6,28 +6,7 @@ import fitz  # PyMuPDF for PDF extraction
 from docx import Document
 
 from engine.watcher import File
-
-SUPPORTED_TEXT_EXTENSIONS = [
-    "txt",
-    "md",
-    "json",
-    "csv",
-    "tsv",
-    "yaml",
-    "yml",
-    "ini",
-    "xml",
-    "html",
-    "py",
-    "java",
-    "js",
-    "cpp",
-    "c",
-    "h",
-    "sh",
-    "pdf",
-    "docx",
-]
+from utils import SUPPORTED_TEXT_EXTENSIONS
 
 
 class Preprocessor:
@@ -40,15 +19,15 @@ class Preprocessor:
         return content
 
     def _read_content(self, file: File) -> str:
-        if file.extension is None:
+        if not file.extension:
             raise ValueError("Cannot determine file type without extension.")
 
         ext = file.extension.lower()
 
-        if ext == "pdf":
+        if ext == ".pdf":
             return self._extract_text_from_pdf_bytes(file.content)
 
-        if ext == "docx":
+        if ext == ".docx":
             return self._extract_text_from_docx_bytes(file.content)
 
         if ext in SUPPORTED_TEXT_EXTENSIONS:

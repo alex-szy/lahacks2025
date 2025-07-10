@@ -1,10 +1,10 @@
-from typing import Optional
 from pathlib import Path
+from typing import Optional
 
 from engine.classifier import Classifier, Summarizer
 from engine.db.database import VectorDatabase
-from engine.watcher import File
 from engine.preprocessor import Preprocessor
+from engine.watcher import File
 
 
 class SaveProcessor:

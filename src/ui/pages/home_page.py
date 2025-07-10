@@ -1,19 +1,19 @@
-import logging
+import os
+import subprocess
+import sys
 
-from PySide6.QtCore import QSize, Qt
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
-    QFrame,
-    QLabel,
     QLineEdit,
     QListWidget,
     QListWidgetItem,
+    QMessageBox,
     QVBoxLayout,
     QWidget,
 )
 
-from commands.find import _find as r_find
-from frontend.ui.widgets.file_card import FileCard
-from frontend.utils.icons import icon
+from api.find import find
+from ui.widgets.file_card import FileCard
 
 
 class HomePage(QWidget):
@@ -30,7 +30,7 @@ class HomePage(QWidget):
         Called when a user clicks a file card in the list.
     """
 
-    def __init__(self, on_open):
+    def __init__(self):
         super().__init__()
 
         # ── Layout ────────────────────────────────────────────────────────────
@@ -40,36 +40,14 @@ class HomePage(QWidget):
 
         # ── Search bar ───────────────────────────────────────────────────────
         self.search_edit = QLineEdit(placeholderText="Search for a file …")
-        self.search_edit.setFixedHeight(46)
-        self.search_edit.setStyleSheet(
-            """
-            QLineEdit {
-                background:#ffffff; color:#222;
-                font-family:"Poppins",sans-serif; font-size:14px;
-                border:1px solid #d4d4d4; border-radius:23px; padding-left:48px;
-            }
-            QLineEdit:focus { border-color:#7a74ff; }
-            QLineEdit::placeholder { color:#999; }
-            """
-        )
-        # leading magnifying‑glass icon
-        mag = QLabel(self.search_edit)
-        mag.setPixmap(icon("search", 24).pixmap(QSize(24, 24)))
-        mag.move(16, 11)
 
         # Trigger search *only* when user presses Return/Enter
         self.search_edit.returnPressed.connect(self._handle_search)
         lay.addWidget(self.search_edit)
 
         # ── Results list ──────────────────────────────────────────────────────
-        self.results = QListWidget(frameShape=QFrame.NoFrame, spacing=4)
-        self.results.itemClicked.connect(on_open)
-        self.results.setStyleSheet(
-            """
-            QListWidget { border:none; background:#fff; }
-            QListWidget::item:selected{ background:#ebf0ff; border-radius:6px; }
-            """
-        )
+        self.results = QListWidget()
+        self.results.itemDoubleClicked.connect(self._handle_open)
         lay.addWidget(self.results)
 
     # ── Internal helpers ─────────────────────────────────────────────────────
@@ -77,12 +55,14 @@ class HomePage(QWidget):
         """Invoke external search callback and render its results."""
         query = self.search_edit.text().strip()
         if not query:
-            self._show_no_results()
             return
 
-        matches, err = r_find(query)
+        matches, err = find(query)
         if err:
-            logging.error(f"search error: {err}")
+            QMessageBox.critical(
+                self, "Error searching", f"Error searching for file: {err}"
+            )
+            return
 
         self._render_results(matches)
 
@@ -90,18 +70,22 @@ class HomePage(QWidget):
         """Populate the QListWidget with FileCard widgets."""
         self.results.clear()
         if not files:
-            self._show_no_results()
+            empty = QListWidgetItem("No results found.")
+            empty.setFlags(Qt.ItemFlag.ItemIsEnabled)  # non‑selectable label
+            self.results.addItem(empty)
             return
         for file_obj in files:
             card = FileCard(file_obj)
-            item = QListWidgetItem()
+            item = QListWidgetItem(listview=self.results)
             item.setSizeHint(card.sizeHint())
-            self.results.addItem(item)
             self.results.setItemWidget(item, card)
 
-    def _show_no_results(self):
-        """Display a static list item indicating zero matches."""
-        self.results.clear()
-        empty = QListWidgetItem("No results found.")
-        empty.setFlags(Qt.ItemIsEnabled)  # non‑selectable label
-        self.results.addItem(empty)
+    def _handle_open(self, item: QListWidgetItem):
+        card = self.results.itemWidget(item)
+        filepath = card.path
+        if sys.platform == "darwin":  # macOS
+            subprocess.call(("open", filepath))
+        elif sys.platform == "win32":  # Windows
+            os.startfile(filepath)
+        else:  # linux variants
+            subprocess.call(("xdg-open", filepath))

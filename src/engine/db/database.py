@@ -5,9 +5,10 @@ import chromadb
 import chromadb.api
 import chromadb.api.types
 
-from engine.watcher import File
 import engine.db.models as models
+from engine.watcher import File
 
+DISTANCE_THRESHOLD = 1.7
 
 class VectorDatabase:
     def __init__(self):
@@ -39,7 +40,7 @@ class VectorDatabase:
 
     def get_query_results(self, query: str, limit: int = 10):
         res = self.collection.query(
-            query_texts=query, n_results=limit, include=["metadatas", "documents"]
+            query_texts=query, n_results=limit, include=["metadatas", "documents", "distances"]
         )
 
         return {
@@ -49,9 +50,10 @@ class VectorDatabase:
                 path=metadata["path"],
                 extension=metadata["extension"],
             )
-            for document, metadata, id in zip(
-                res["documents"][0], res["metadatas"][0], res["ids"][0]
+            for document, metadata, id, distance in zip(
+                res["documents"][0], res["metadatas"][0], res["ids"][0], res["distances"][0]
             )
+            if distance < DISTANCE_THRESHOLD
         }
 
     def remove_entries(self, ids: chromadb.api.types.IDs):

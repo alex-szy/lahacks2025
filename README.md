@@ -1,15 +1,15 @@
-# Munchkin: Semantic File Explorer/Organizer
+# 🐈 Munchkin 🐈: Semantic File Explorer/Organizer
 
-Ever felt like your downloads folder is too cluttered and wished that there was a tool to automatically organize it? Dissatisfied with the current search functionality of your operating system? You're in the right place!
+Ever felt like your downloads folder is too cluttered and wished that there was a tool to automatically organize it? Dissatisfied with the current search functionality of your operating system?
 
 Munchkin (`mckn`) offers a 2 pronged solution to your problems. It is comprised of 2 parts:
 
 1. File sorting on download
 2. Semantic file search
 
-Most people are working on a bunch of things at the same time. If you're in school, you take a bunch of different classes. One of the uses of Munchkin is that you can configure it with a list of folder **associations**. Essentially, you **associate** a folder with a particular semantic meaning, for example, a class on compilers and programming languages, or a particular topic you're interested in, like archeology.
+First, configure Munchkin with a list of folder **associations**. Essentially, you **associate** a folder with a particular semantic meaning, for example, a class on compilers and programming languages, or a particular topic you're interested in, like archeology.
 
-Next, our daemon runs in the background and watches the folders you configure for new files. When a file appears in one of the folders, Munchkin takes a look at the file and automatically decides which (if any) of the preconfigured folder associations best matches the content of the file. It then automatically moves the file into the folder with that association, keeping your downloads folder clean.
+Next, the `munchkin` server runs in the background and watches the folders you configure for new files. When a file appears in one of the folders, Munchkin takes a look at the file and automatically decides which (if any) of the preconfigured folder associations best matches the content of the file. It then automatically moves the file into the folder with that association, keeping your downloads folder clean.
 
 Furthermore, each supported file seen by Munchkin also has its metadata stored in a local database. When you want to search for a file, Munchkin performs a lookup and finds the file which best matches your query. No more headaches looking for a file just because it has a strange name!
 

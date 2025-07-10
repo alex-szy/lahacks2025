@@ -13,16 +13,25 @@ Next, the `munchkin` server runs in the background and watches the folders you c
 
 Furthermore, each supported file seen by Munchkin also has its metadata stored in a local database. When you want to search for a file, Munchkin performs a lookup and finds the file which best matches your query. No more headaches looking for a file just because it has a strange name!
 
-## Features
+## System Architecture
 
-Munchkin itself has 2 frontends, a CLI and a GUI. Choose whichever one you're more comfortable with. Example usages are below:
+![image](assets/munchkin_arch.png)
+
+Our system is built on a highly modular architecture. The backend is structured like so:
+- The `munchkin` server runs a set of observer threads
+- The observer threads pass files along to the `saveprocessor`
+- The `saveprocessor` orchestrates the preprocessing of the file, the classification of the file content and the saving of embeddings to the vector database
+- The `queryprocessor` handles the semantic searching of files
+
+`munchkin` has 2 frontends, a CLI and a GUI, which both communicate with the server through a clerk which is an abstraction over a lightweight HTTP API. Choose whichever frontend you're more comfortable with. Example usages are below:
 
 ```
-mckn start                 # Start the daemon
-mckn stop                  # Stop the daemon
-mckn find <query>          # Find a file using a query string
-mckn watch add ~/Downloads # Add downloads folder to watch paths
-mckn gui                   # Start the gui
+mckn start                       # Start the daemon
+mckn stop                        # Stop the daemon
+mckn find <query>                # Find a file using a query string
+mckn watch add ~/Downloads       # Add downloads folder to watch paths
+mckn assoc add ~/Desktop/Biology # Add Biology folder to folder associations
+mckn gui                         # Start the gui
 ...
 ```
 
